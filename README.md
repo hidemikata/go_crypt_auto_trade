@@ -8,6 +8,8 @@ api_key =
 secret_key = 
     
 # mysql
+creata database coin_data;
+  
   
 CREATE TABLE `btc_jpy_live` (
   `date` datetime DEFAULT NULL,
