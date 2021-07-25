@@ -1,5 +1,5 @@
 
-#config/config.ini
+# config/config.ini
   
 [bitflyer]
   
@@ -7,7 +7,7 @@ api_key =
   
 secret_key = 
     
-#mysql
+# mysql
   
 CREATE TABLE `btc_jpy_live` (
   `date` datetime DEFAULT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE `btc_jpy_live_position` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
   
-
+# run
 go run main.go
 
 
