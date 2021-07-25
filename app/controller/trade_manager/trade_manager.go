@@ -1,52 +1,57 @@
 package trade_manager
 
 import (
-	"btcanallive_refact/app/bitflyer"
-	"btcanallive_refact/app/trade_def"
 	"btcanallive_refact/app/marcket_def"
-	"btcanallive_refact/app/trade_jadge_algo"
 	"btcanallive_refact/app/model"
+	"btcanallive_refact/app/trade_def"
+	"btcanallive_refact/app/trade_jadge_algo"
 	"fmt"
 	"time"
 )
 
-func Run() {
-	fmt.Println("run")
-    api := bitflyer.NewBitflyer("BTC_JPY")
-    var marcket marcket_def.Marcket
-    marcket = api
-	real_time_ticker_ch := make(chan trade_def.Ticker, 1)
-	go marcket.StartGettingRealTimeTicker(real_time_ticker_ch)
-	defer close(real_time_ticker_ch)
+func StartRealTimeTickGetter(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker) {
+	fmt.Println("StartRealTimeTickGetter")
+	marcket.StartGettingRealTimeTicker(real_time_ticker_ch)
+}
 
+func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker, ti []trade_jadge_algo.TradeInterface) {
+	fmt.Println("StartAnalisis")
 	for i := range real_time_ticker_ch {
 		if !save_ticker_table(i) {
 			continue
 		}
 
-		sma_algo := trade_jadge_algo.NewSmaAlgorithm()
-		var ti trade_jadge_algo.TradeInterface
-		ti = sma_algo
-		if !ti.IsDbCollectedData() {
-			continue
+		buy := true
+		fix := false
+		fmt.Println("0", buy, fix)
+		for _, ti_v := range ti {
+			if !ti_v.IsDbCollectedData() {
+				buy = false
+				fix = false
+				continue
+			}
+
+			ti_v.Analisis()
+			buy = buy && ti_v.IsTradeOrder()
+			fix = fix || ti_v.IsTradeFix()
+			fmt.Println("-", buy, fix)
 		}
-        ti.Analisis()
-		buy := ti.IsTradeOrder()
-		fix := ti.IsTradeFix()
-        fmt.Println(buy, fix)
-        latest_pos, fixed:= model.GetLatestPosition()
+
+		fmt.Println("1", buy, fix)
+		latest_pos, fixed := model.GetLatestPosition()
+
 		if buy && (latest_pos.Date == "" || fixed) {
-            fmt.Println("buy")
+			fmt.Println("buy")
 			marcket.PutOrder()
-            tick := marcket.GetTicker()
-            model.InsertPosition(tick)
-		} else if fix && (latest_pos.Date != "" && !fixed){
-            fmt.Println("fix")
+			tick := marcket.GetTicker()
+			model.InsertPosition(tick)
+		} else if fix && (latest_pos.Date != "" && !fixed) {
+			fmt.Println("fix")
 			marcket.FixOrder()
-            tick := marcket.GetTicker()
-            model.UpdatePosition(latest_pos, tick)
-        } else {
-        }
+			tick := marcket.GetTicker()
+			model.UpdatePosition(latest_pos, tick)
+		} else {
+		}
 	}
 
 }
@@ -95,4 +100,3 @@ func save_ticker_table(t trade_def.Ticker) bool {
 	}
 	return insert
 }
-

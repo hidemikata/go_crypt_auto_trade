@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func GetLatestPosition() (trade_def.Position, bool){
+func GetLatestPosition() (trade_def.Position, bool) {
 	rows, err := db.Query(`select * from btc_jpy_live_position order by date desc limit 1;`)
 	if err != nil {
 		panic(err.Error())
@@ -32,7 +32,7 @@ func GetLatestPosition() (trade_def.Position, bool){
 		}
 		break
 	}
-    //null.Valid true = not null
+	//null.Valid true = not null
 	return pos, null.Valid
 }
 
@@ -126,5 +126,3 @@ func GetLatestCandle(date string) trade_def.BtcJpy {
 	}
 	return bj
 }
-
-

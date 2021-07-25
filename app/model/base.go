@@ -7,6 +7,7 @@ import (
 )
 
 var db *sql.DB
+
 const format1 = "2006-01-02 15:04:05" //固定
 
 func init() {

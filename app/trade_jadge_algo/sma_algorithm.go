@@ -49,11 +49,11 @@ func second_to_zero(t time.Time) string {
 
 func NewSmaAlgorithm() *Sma {
 	return &Sma{
-		num_of_long:long_sma,
-		num_of_short:short_sma,
+		num_of_long:  long_sma,
+		num_of_short: short_sma,
 	}
 }
-func (sma_obj *Sma)Analisis(){
+func (sma_obj *Sma) Analisis() {
 	now := time.Now()
 	margine_duration := time.Duration(now_date_margine)
 	now_before_1min := now.Add(-(time.Minute * margine_duration))
@@ -74,8 +74,8 @@ func (sma_obj *Sma)Analisis(){
 		sma_1: calc_sma(records[:len(records)-1], short_sma),
 		sma_2: calc_sma(records[:len(records)-2], short_sma),
 	}
-    sma_obj.Long = l
-    sma_obj.Short = s
+	sma_obj.Long = l
+	sma_obj.Short = s
 }
 
 func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
@@ -146,4 +146,3 @@ func (sma_obj *Sma) IsTradeFix() bool {
 	}
 	return false
 }
-

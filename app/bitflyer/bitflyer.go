@@ -14,8 +14,8 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
-    "strings"
 )
 
 const BasePath = "https://api.bitflyer.com"
@@ -59,23 +59,22 @@ func setPrivateHeader(req *http.Request) {
 	req.Header.Add("Content-Type", "application/json")
 }
 
-func AllOrderCancel(){
-    fmt.Println("AllOrderCancel")
-    client := &http.Client{CheckRedirect: nil}
+func AllOrderCancel() {
+	fmt.Println("AllOrderCancel")
+	client := &http.Client{CheckRedirect: nil}
 
-    req_body := strings.NewReader(`{"product_code":"`+"BTC_JPY"+`"}`)
-    req, _ := http.NewRequest("POST", BasePath+MyAllOrderCancel, req_body)
-    setPrivateHeader(req)
+	req_body := strings.NewReader(`{"product_code":"` + "BTC_JPY" + `"}`)
+	req, _ := http.NewRequest("POST", BasePath+MyAllOrderCancel, req_body)
+	setPrivateHeader(req)
 
-    res, _ := client.Do(req)
-    defer res.Body.Close()
+	res, _ := client.Do(req)
+	defer res.Body.Close()
 
-    body,_ := io.ReadAll(res.Body)
-    fmt.Println(string(body))
+	body, _ := io.ReadAll(res.Body)
+	fmt.Println(string(body))
 }
 
-
-func (api *Bitflyer)GetTicker() trade_def.Ticker {
+func (api *Bitflyer) GetTicker() trade_def.Ticker {
 	fmt.Println("GetTicker")
 	resp, _ := http.Get(BasePath + TickerUrl + "?product_code=BTC_JPY")
 	defer resp.Body.Close()
@@ -85,15 +84,15 @@ func (api *Bitflyer)GetTicker() trade_def.Ticker {
 	return decoded
 }
 
-func (api *Bitflyer)PutOrder(){
-    fmt.Println("put order to bitflyer api")
+func (api *Bitflyer) PutOrder() {
+	fmt.Println("put order to bitflyer api")
 }
 
-func (api *Bitflyer)FixOrder(){
-    fmt.Println("fix order to bitflyer api")
+func (api *Bitflyer) FixOrder() {
+	fmt.Println("fix order to bitflyer api")
 }
 
-func (api *Bitflyer)StartGettingRealTimeTicker(ch chan<- trade_def.Ticker) {
+func (api *Bitflyer) StartGettingRealTimeTicker(ch chan<- trade_def.Ticker) {
 	u := url.URL{Scheme: "wss", Host: "ws.lightstream.bitflyer.com", Path: "/json-rpc"}
 	fmt.Println("connecting to %s", u.String())
 
@@ -138,4 +137,3 @@ OUTER:
 		}
 	}
 }
-
