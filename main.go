@@ -22,6 +22,9 @@ func main() {
 	ti := make([]trade_jadge_algo.TradeInterface, 0)
 	ti = append(ti, sma_algo)
 
+
+    //時間が来たらぶった切ったり再開したり。
+
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go trade_manager.StartRealTimeTickGetter(marcket, real_time_ticker_ch)
