@@ -14,9 +14,13 @@ func StartRealTimeTickGetter(marcket marcket_def.Marcket, real_time_ticker_ch ch
 	marcket.StartGettingRealTimeTicker(real_time_ticker_ch)
 }
 
-func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker, ti []trade_jadge_algo.TradeInterface) {
+func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker, ti []trade_jadge_algo.TradeInterface, time_ch chan bool) {
 	fmt.Println("StartAnalisis")
 	for i := range real_time_ticker_ch {
+        if (<-time_ch == false){//todo for の外に出してticker getも止める
+            force_marcket_close(marcket)
+            continue
+        }
 		if !save_ticker_table(i) {
 			continue
 		}
@@ -54,6 +58,17 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 		}
 	}
 
+}
+
+func force_marcket_close(marcket marcket_def.Marcket){
+	fmt.Print("x")
+    latest_pos, fixed := model.GetLatestPosition()
+    if (latest_pos.Date != "" && !fixed) {
+	    fmt.Println("foce fix do")
+	    marcket.FixOrder()
+	    tick := marcket.GetTicker()
+	    model.UpdatePosition(latest_pos, tick)
+    }
 }
 
 func second_to_zero(t time.Time) string {
