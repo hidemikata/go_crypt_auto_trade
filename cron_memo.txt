@@ -1,0 +1,16 @@
+PYTHONIOENCODING = 'utf-8'
+LANG=ja_JP.UTF-8
+#$HOME/Desktop/log.txt 2>&1
+#running root cron too(shutdown -r now).
+
+
+##prod
+#* * * * * bash -l -c 'echo start >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./start.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
+
+#* * * * * bash -l -c 'echo stop >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./stop.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
+
+
+0 7 * * * bash -l -c 'echo start >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./start.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
+
+0 4 * * * bash -l -c 'echo stop >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./stop.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
+
