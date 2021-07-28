@@ -99,6 +99,7 @@ func save_ticker_table(t trade_def.Ticker) bool {
 
 	if count == 0 {
 		fmt.Println("insert")
+		fmt.Println(time.Now())
 		model.InsertNewCandle(date, t)
 		insert = true
 	} else {
