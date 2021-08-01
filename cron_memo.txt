@@ -4,13 +4,12 @@ LANG=ja_JP.UTF-8
 #running root cron too(shutdown -r now).
 
 
+
 ##prod
-#* * * * * bash -l -c 'echo start >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./start.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
+0 7 * * * bash -l -c 'echo start >> /home/ubuntu/log.txt 2>&1 && date >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./start.bash >> /home/ubuntu/log.txt 2>&1 && echo end >> /home/ubuntu/log.txt 2>&1'
 
-#* * * * * bash -l -c 'echo stop >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./stop.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
+* 8-23 * * * bash -l -c 'echo is_running >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./is_running.bash >> /home/ubuntu/log.txt 2>&1 && ./start.bash >> /home/ubuntu/log.txt 2>&1 && echo is_running end >> /home/ubuntu/log.txt 2>&1'
+* 0-3 * * * bash -l -c 'echo is_running >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./is_running.bash >> /home/ubuntu/log.txt 2>&1 && ./start.bash >> /home/ubuntu/log.txt 2>&1 && echo is_running end >> /home/ubuntu/log.txt 2>&1'
 
-
-0 7 * * * bash -l -c 'echo start >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./start.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
-
-0 4 * * * bash -l -c 'echo stop >> $HOME/Desktop/log.txt 2>&1 && date >> $HOME/Desktop/log.txt 2>&1 && cd /Users//Desktop/go/btcanallive_refact && ./stop.bash >> $HOME/Desktop/log.txt 2>&1 && echo end >> $HOME/Desktop/log.txt 2>&1'
+0 4 * * * bash -l -c 'echo  stop >> /home/ubuntu/log.txt 2>&1 && date >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./stop.bash >> /home/ubuntu/log.txt 2>&1 && echo end >> /home/ubuntu/log.txt 2>&1'
 
