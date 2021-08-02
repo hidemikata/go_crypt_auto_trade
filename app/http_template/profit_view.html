@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['line']});
+    google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', 'position id');
+    data.addColumn('number', 'profit');
+
+
+    data.addRows([
+        {{ range .Profit }}
+        [{{ .Number}},{{ .Profit}}],
+        {{ end }}
+    ]);
+
+    var options = {
+      chart: {
+        title: 'Bakueki system',
+        subtitle: 'this system increase your money'
+      },
+      width: 900,
+      height: 500,
+      axes: {
+  //      x: {
+  //        0: {side: 'top'}
+  //      }
+      }
+    };
+
+    var chart = new google.charts.Line(document.getElementById('line_top_x'));
+
+    chart.draw(data, google.charts.Line.convertOptions(options));
+  }
+</script>
+</head>
+<body>
+<h1>{{.Title}}</h1>
+<p>{{.Message}}</p>
+<p>現在時刻: {{.Time.Format "2006/1/2 15:04:05"}}</p>
+
+{{ range .Profit }}
+[{{ .Number}},{{ .Profit}}],
+{{ end }}
+
+<div id="line_top_x"></div>
+
+
+
+</body>
+</html>

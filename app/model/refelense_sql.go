@@ -3,8 +3,9 @@ package model
 import (
 	"btcanallive_refact/app/trade_def"
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"strconv"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func GetLatestPosition() (trade_def.Position, bool) {
@@ -125,4 +126,31 @@ func GetLatestCandle(date string) trade_def.BtcJpy {
 		break
 	}
 	return bj
+}
+func GetProfitList() []float64 {
+	rows, err := db.Query(`select * from btc_jpy_live_position where Profit is not NULL order by date;`)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer rows.Close()
+
+	var pos trade_def.Position
+	var profits []float64
+	for rows.Next() {
+		err = rows.Scan(
+			&pos.Date,
+			&pos.Buy_or_sell,
+			&pos.Price,
+			&pos.Fix_date,
+			&pos.Fix_price,
+			&pos.Profit,
+			&pos.Symbol,
+		)
+		if err != nil {
+			panic(err.Error())
+		}
+		profits = append(profits, pos.Profit)
+	}
+	return profits
+
 }
