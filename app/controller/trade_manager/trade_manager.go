@@ -7,18 +7,20 @@ import (
 	"btcanallive_refact/app/trade_jadge_algo"
 	"fmt"
 	"time"
+	"sync"
 )
 
-func StartRealTimeTickGetter(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker) {
+func StartRealTimeTickGetter(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker, wg *sync.WaitGroup) {
 	fmt.Println("StartRealTimeTickGetter")
 	marcket.StartGettingRealTimeTicker(real_time_ticker_ch)
+    wg.Done()
 }
 
 func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker, ti []trade_jadge_algo.TradeInterface, time_ch chan bool) {
 	fmt.Println("StartAnalisis")
 	for i := range real_time_ticker_ch {
-        if (<-time_ch == false){//todo for の外に出してticker getも止める
-            force_marcket_close(marcket)
+        if (<-time_ch == false){
+            ForceMarcketClose(marcket)
             continue
         }
 		if !save_ticker_table(i) {
@@ -60,7 +62,7 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 
 }
 
-func force_marcket_close(marcket marcket_def.Marcket){
+func ForceMarcketClose(marcket marcket_def.Marcket){
 	fmt.Print("x")
     latest_pos, fixed := model.GetLatestPosition()
     if (latest_pos.Date != "" && !fixed) {

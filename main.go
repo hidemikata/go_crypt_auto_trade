@@ -8,6 +8,7 @@ import (
 	"btcanallive_refact/app/trade_jadge_algo"
 	"sync"
     "time"
+    "fmt"
 )
 
 func main() {
@@ -30,11 +31,15 @@ func main() {
 
     go time_checker(time_ch)
 
+	fmt.Println("force fix before start")
+    trade_manager.ForceMarcketClose(marcket)
 	var wg sync.WaitGroup
-	wg.Add(2)
-	go trade_manager.StartRealTimeTickGetter(marcket, real_time_ticker_ch)//こっちの通信も止めたいけど止めれない
+	wg.Add(1)
+	go trade_manager.StartRealTimeTickGetter(marcket, real_time_ticker_ch, &wg)//こっちの通信も止めたいけど止めれない
 	go trade_manager.StartAnalisis(marcket, real_time_ticker_ch, ti, time_ch)
 	wg.Wait()
+	fmt.Println("force fix after wait")
+    trade_manager.ForceMarcketClose(marcket)
 }
 
 func time_checker(ch chan bool){
