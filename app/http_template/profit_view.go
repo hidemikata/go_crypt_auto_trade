@@ -2,7 +2,6 @@ package http_template
 
 import (
 	"btcanallive_refact/app/model"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -34,11 +33,18 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 	}
 	profits := model.GetProfitList()
 	var d []Data
-
+    var profit_sum float64
 	for i, v := range profits {
-		d = append(d, Data{i, v})
+        profit_sum += v
+		d = append(d, Data{i, profit_sum})
 	}
-	fmt.Println(d)
+
+    var title string
+    if profit_sum > 0 {
+        title = "爆益"
+    } else {
+        title = "爆損"
+    }
 
 	if err := t.Execute(w, struct {
 		Title   string
@@ -46,7 +52,7 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		Time    time.Time
 		Profit  []Data
 	}{
-		Title:   "爆損",
+		Title:   title,
 		Message: "こんにちは！",
 		Time:    time.Now(),
 		Profit:  d,
