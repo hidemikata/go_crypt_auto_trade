@@ -127,7 +127,7 @@ func GetLatestCandle(date string) trade_def.BtcJpy {
 	}
 	return bj
 }
-func GetProfitList() []float64 {
+func GetProfitList() ([]float64, []string) {
 	rows, err := db.Query(`select * from btc_jpy_live_position where Profit is not NULL order by date;`)
 	if err != nil {
 		panic(err.Error())
@@ -136,6 +136,7 @@ func GetProfitList() []float64 {
 
 	var pos trade_def.Position
 	var profits []float64
+	var position_start_date []string
 	for rows.Next() {
 		err = rows.Scan(
 			&pos.Date,
@@ -150,7 +151,8 @@ func GetProfitList() []float64 {
 			panic(err.Error())
 		}
 		profits = append(profits, pos.Profit)
+		position_start_date = append(position_start_date, pos.Date)
 	}
-	return profits
+	return profits, position_start_date
 
 }
