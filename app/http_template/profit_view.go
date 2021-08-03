@@ -13,8 +13,21 @@ type Data struct {
 	Number int
 	Profit float64
 }
-
+func checkAuth(r *http.Request) bool {
+    id, pass, ok := r.BasicAuth()
+    if ok == false{
+        return false
+    }
+    return id == "bakueki" && pass == "aba"
+}
 func ProfitView(w http.ResponseWriter, r *http.Request) {
+    if checkAuth(r) == false{
+        w.Header().Add("WWW-Authenticate", `Basic realm="my private area"`)
+        w.WriteHeader(http.StatusUnauthorized) // 401コード
+        // 認証失敗時の出力内容
+        w.Write([]byte("401 認証失敗\n"))
+        return
+    }
 	t, err := template.ParseFiles("app/http_template/profit_view.html")
 	if err != nil {
 		log.Fatalf("template error: %v", err)
