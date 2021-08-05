@@ -118,12 +118,12 @@
 				1:{
 				type: "line",
 				color: 'pink',
-				lineWidth: 1,
+				lineWidth: 2,
 				},
 				2:{
 				type: "line",
 				color: 'red',
-				lineWidth: 1,
+				lineWidth: 2,
 				}
        }
      },
@@ -149,12 +149,15 @@
    data.addColumn('number', 'Stock short');
 
   
-   // Create random stock values, just like it works in reality.
+   // Create random stock values, just like it works in reality.   //{Sma1 . {$i}}
    var open , close, low ,high = 0;
-
-   {{ range .CanleDate }}
+   {{$sma1 := .Sma1}}
+   {{$sma2 := .Sma2}}
+   {{ range $i, $v := .CanleDate }}
+      var sma1 = {{index $sma1 $i}}
+      var sma2 = {{index $sma2 $i}}
       var date = new Date('{{ .Date}}');
-      data.addRow([date, {{ .Low}},{{ .Open}},{{ .Close}},{{ .High}}, 4200000, 4000000]);
+      data.addRow([date, {{ .Low}},{{ .Open}},{{ .Close}},{{ .High}}, sma1, sma2]);
    {{ end }}
 
   /* Change the format of the date column, used in chart, but not chart range filter */  

@@ -73,6 +73,14 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 
 	candle_data, candle_min, candle_max := model.GetCandleData()
 
+	sma1 := make([]float64, 0)
+	sma2 := make([]float64, 0)
+
+	for i := range candle_data {
+		sma1 = append(sma1, calc_sma(candle_data[:i], 5))
+		sma2 = append(sma2, calc_sma(candle_data[:i], 25))
+	}
+
 	if err := t.Execute(w, struct {
 		Title     string
 		Message   string
@@ -81,6 +89,8 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		CanleDate []trade_def.BtcJpy
 		CandleMax float64
 		CandleMin float64
+		Sma1      []float64
+		Sma2      []float64
 	}{
 		Title:     title,
 		Message:   "こんにちは！",
@@ -89,7 +99,22 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		CanleDate: candle_data,
 		CandleMax: candle_max,
 		CandleMin: candle_min,
+		Sma1:      sma1,
+		Sma2:      sma2,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
+}
+
+func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
+	if len(records) < duration {
+		return 0.0
+	}
+	total := 0.0
+	start_i := len(records) - duration
+	record_latest := records[start_i:]
+	for i := range record_latest {
+		total += record_latest[i].Close
+	}
+	return total / float64(len(record_latest))
 }
