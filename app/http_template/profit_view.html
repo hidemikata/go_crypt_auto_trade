@@ -151,8 +151,6 @@
   
    // Create random stock values, just like it works in reality.
    var open , close, low ,high = 0;
-//     var date = new Date(2012, 0 ,day);
-//     data.addRow([date,low, open, close, high, 200, 500]);
 
    {{ range .CanleDate }}
       var date = new Date('{{ .Date}}');
