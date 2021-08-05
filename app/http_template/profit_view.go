@@ -71,7 +71,7 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		title = "爆損"
 	}
 
-	candle_data := model.GetCandleData()
+	candle_data, candle_min, candle_max := model.GetCandleData()
 
 	if err := t.Execute(w, struct {
 		Title     string
@@ -79,12 +79,16 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		Time      time.Time
 		Profit    []Data
 		CanleDate []trade_def.BtcJpy
+		CandleMax float64
+		CandleMin float64
 	}{
 		Title:     title,
 		Message:   "こんにちは！",
 		Time:      time.Now(),
 		Profit:    d,
 		CanleDate: candle_data,
+		CandleMax: candle_max,
+		CandleMin: candle_min,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
