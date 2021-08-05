@@ -2,6 +2,7 @@ package http_template
 
 import (
 	"btcanallive_refact/app/model"
+	"btcanallive_refact/app/trade_def"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,7 +18,7 @@ type Data struct {
 
 func checkAuth(r *http.Request) bool {
 	id, pass, ok := r.BasicAuth()
-	if ok == false {
+	if !ok {
 		return false
 	}
 	return id == "bakueki" && pass == "aba"
@@ -42,7 +43,7 @@ func get_second_from_00(str string) int {
 
 func ProfitView(w http.ResponseWriter, r *http.Request) {
 
-	if checkAuth(r) == false {
+	if !checkAuth(r) {
 		w.Header().Add("WWW-Authenticate", `Basic realm="my private area"`)
 		w.WriteHeader(http.StatusUnauthorized) // 401コード
 		// 認証失敗時の出力内容
@@ -70,16 +71,20 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		title = "爆損"
 	}
 
+	candle_data := model.GetCandleData()
+
 	if err := t.Execute(w, struct {
-		Title   string
-		Message string
-		Time    time.Time
-		Profit  []Data
+		Title     string
+		Message   string
+		Time      time.Time
+		Profit    []Data
+		CanleDate []trade_def.BtcJpy
 	}{
-		Title:   title,
-		Message: "こんにちは！",
-		Time:    time.Now(),
-		Profit:  d,
+		Title:     title,
+		Message:   "こんにちは！",
+		Time:      time.Now(),
+		Profit:    d,
+		CanleDate: candle_data,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}

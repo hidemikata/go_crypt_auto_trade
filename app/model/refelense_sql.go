@@ -156,3 +156,29 @@ func GetProfitList() ([]float64, []string) {
 	return profits, position_start_date
 
 }
+func GetCandleData() []trade_def.BtcJpy {
+	rows, err := db.Query(`select * from btc_jpy_live order by date;`)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer rows.Close()
+
+	records := make([]trade_def.BtcJpy, 0)
+	for rows.Next() {
+		var record trade_def.BtcJpy
+		err = rows.Scan(
+			&record.Date,
+			&record.Symbol,
+			&record.Open,
+			&record.High,
+			&record.Low,
+			&record.Close,
+		)
+		if err != nil {
+			panic(err.Error())
+		}
+		records = append(records, record)
+	}
+
+	return records
+}
