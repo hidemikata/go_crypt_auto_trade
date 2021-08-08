@@ -124,6 +124,18 @@ body {
   var candleSeries = chart.addCandlestickSeries();
   var data = generateBarsData();
   candleSeries.setData(data);
+  candleSeries.setMarkers([
+      {{range .PositionTime }}
+    {
+        time: {{.}},
+        position: 'aboveBar',
+        color: 'orange',
+        size:10,
+        shape: 'arrowDown',
+        text: 'hogehoge',
+    },
+    {{end}}
+  ])
   
   var smaData = calculateSMA(data, 25);
   var smaData2 = calculateSMA(data, 5);
@@ -203,6 +215,7 @@ body {
     console.log(res)
     return res;
   }
+
   
   function fillBarsSegment(left, right, points) {
     var deltaY = right.price - left.price;

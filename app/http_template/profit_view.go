@@ -72,15 +72,9 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		title = "爆損"
 	}
 
-	candle_data, candle_min, candle_max := model.GetCandleData()
+	candle_data, _, _ := model.GetCandleData()
+	positions := model.GetPositionData()
 
-	sma1 := make([]float64, 0)
-	sma2 := make([]float64, 0)
-
-	for i := range candle_data {
-		sma1 = append(sma1, calc_sma(candle_data[:i], 5))
-		sma2 = append(sma2, calc_sma(candle_data[:i], 25))
-	}
 	var candle_year []string
 	var candle_month []string
 	var candle_day []string
@@ -92,46 +86,50 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		candle_day = append(candle_day, fmt.Sprintf("%d", t.Day()))
 
 	}
+	var position_time []int
+	for _, v_pos := range positions {
+		for i, v_candle := range candle_data {
+			if second_to_zero(timeComvert(v_pos.Date)) == second_to_zero(timeComvert(v_candle.Date)) {
+				position_time = append(position_time, i)
+				break
+			}
+		}
+	}
+
 	if err := t.Execute(w, struct {
-		Title       string
-		Message     string
-		Time        time.Time
-		Profit      []Data
-		CanleDate   []trade_def.BtcJpy
-		CandleMax   float64
-		CandleMin   float64
-		Sma1        []float64
-		Sma2        []float64
-		CandleYear  []string
-		CandleMonth []string
-		CandleDay   []string
+		Title        string
+		Message      string
+		Time         time.Time
+		Profit       []Data
+		CanleDate    []trade_def.BtcJpy
+		CandleYear   []string
+		CandleMonth  []string
+		CandleDay    []string
+		PositionTime []int
 	}{
-		Title:       title,
-		Message:     "こんにちは！",
-		Time:        time.Now(),
-		Profit:      d,
-		CanleDate:   candle_data,
-		CandleMax:   candle_max,
-		CandleMin:   candle_min,
-		Sma1:        sma1,
-		Sma2:        sma2,
-		CandleYear:  candle_year,
-		CandleMonth: candle_month,
-		CandleDay:   candle_day,
+		Title:        title,
+		Message:      "こんにちは！",
+		Time:         time.Now(),
+		Profit:       d,
+		CanleDate:    candle_data,
+		CandleYear:   candle_year,
+		CandleMonth:  candle_month,
+		CandleDay:    candle_day,
+		PositionTime: position_time,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
 }
 
-func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
-	if len(records) < duration {
-		return 0.0
-	}
-	total := 0.0
-	start_i := len(records) - duration
-	record_latest := records[start_i:]
-	for i := range record_latest {
-		total += record_latest[i].Close
-	}
-	return total / float64(len(record_latest))
+func timeComvert(date string) time.Time {
+	t, _ := time.Parse(layout, date)
+	return t
+}
+func second_to_zero(t time.Time) string {
+	min := fmt.Sprintf("%02d", t.Minute())
+	h := fmt.Sprintf("%02d", t.Hour())
+	d := fmt.Sprintf("%02d", t.Day())
+	m := fmt.Sprintf("%02d", int(t.Month()))
+	y := fmt.Sprintf("%02d", t.Year())
+	return y + "-" + m + "-" + d + " " + h + ":" + min + ":00"
 }

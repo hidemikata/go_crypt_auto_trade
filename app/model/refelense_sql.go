@@ -191,3 +191,30 @@ func GetCandleData() ([]trade_def.BtcJpy, float64, float64) {
 
 	return records, min, max
 }
+
+func GetPositionData() []trade_def.Position {
+	rows, err := db.Query(`select * from btc_jpy_live_position order by date;`)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer rows.Close()
+	records := make([]trade_def.Position, 0)
+	for rows.Next() {
+		var record trade_def.Position
+		err = rows.Scan(
+			&record.Date,
+			&record.Buy_or_sell,
+			&record.Price,
+			&record.Fix_date,
+			&record.Fix_price,
+			&record.Profit,
+			&record.Symbol,
+		)
+		if err != nil {
+			panic(err.Error())
+		}
+		records = append(records, record)
+	}
+
+	return records
+}
