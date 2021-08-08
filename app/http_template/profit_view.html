@@ -127,12 +127,12 @@ body {
   candleSeries.setMarkers([
       {{range .PositionTime }}
     {
-        time: {{.}},
+        time: {{.Id}},
         position: 'aboveBar',
-        color: 'orange',
+        color: '{{.Label_color}}',
         size:10,
         shape: 'arrowDown',
-        text: 'hogehoge',
+        text: '{{.Profit}}',
     },
     {{end}}
   ])
@@ -199,7 +199,7 @@ body {
     }
     */
     var res = [
-      {{range $i, $v := .CanleDate }}
+      {{range $i, $v := .CanleData }}
     {
       "time": {{$i}},
       "open":{{.Open}},

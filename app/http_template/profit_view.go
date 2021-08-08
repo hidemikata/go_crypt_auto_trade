@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+type PositionView struct {
+	Id          int
+	Profit      float64
+	Label_color string
+}
+
 type Data struct {
 	Number     int
 	ProfitSum  float64
@@ -75,29 +81,39 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 	candle_data, _, _ := model.GetCandleData()
 	positions := model.GetPositionData()
 
-	var position_time []int
+	position_time := make([]PositionView, 0)
 	for _, v_pos := range positions {
 		for i, v_candle := range candle_data {
 			if second_to_zero(timeComvert(v_pos.Date)) == second_to_zero(timeComvert(v_candle.Date)) {
-				position_time = append(position_time, i)
+				color := "blue"
+				if v_pos.Profit < 0 {
+					color = "red"
+				}
+				position_tmp := PositionView{
+					Id:          i,
+					Profit:      v_pos.Profit,
+					Label_color: color,
+				}
+				position_time = append(position_time, position_tmp)
 				break
 			}
 		}
 	}
+	fmt.Println(position_time)
 
 	if err := t.Execute(w, struct {
 		Title        string
 		Message      string
 		Time         time.Time
 		Profit       []Data
-		CanleDate    []trade_def.BtcJpy
-		PositionTime []int
+		CanleData    []trade_def.BtcJpy
+		PositionTime []PositionView
 	}{
 		Title:        title,
 		Message:      "こんにちは！",
 		Time:         time.Now(),
 		Profit:       d,
-		CanleDate:    candle_data,
+		CanleData:    candle_data,
 		PositionTime: position_time,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
