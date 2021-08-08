@@ -199,9 +199,6 @@ body {
     }
     */
     var res = [
-   {{$year := .CandleYear}}
-   {{$month := .CandleMonth}}
-   {{$day := .CandleDay}}
       {{range $i, $v := .CanleDate }}
     {
       "time": {{$i}},

@@ -75,17 +75,6 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 	candle_data, _, _ := model.GetCandleData()
 	positions := model.GetPositionData()
 
-	var candle_year []string
-	var candle_month []string
-	var candle_day []string
-	for _, v := range candle_data {
-		t, _ := time.Parse(layout, v.Date)
-
-		candle_year = append(candle_year, fmt.Sprintf("%d", t.Year()))
-		candle_month = append(candle_month, fmt.Sprintf("%d", int(t.Month())))
-		candle_day = append(candle_day, fmt.Sprintf("%d", t.Day()))
-
-	}
 	var position_time []int
 	for _, v_pos := range positions {
 		for i, v_candle := range candle_data {
@@ -102,9 +91,6 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		Time         time.Time
 		Profit       []Data
 		CanleDate    []trade_def.BtcJpy
-		CandleYear   []string
-		CandleMonth  []string
-		CandleDay    []string
 		PositionTime []int
 	}{
 		Title:        title,
@@ -112,9 +98,6 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		Time:         time.Now(),
 		Profit:       d,
 		CanleDate:    candle_data,
-		CandleYear:   candle_year,
-		CandleMonth:  candle_month,
-		CandleDay:    candle_day,
 		PositionTime: position_time,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
