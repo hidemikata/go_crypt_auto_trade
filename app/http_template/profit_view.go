@@ -3,6 +3,7 @@ package http_template
 import (
 	"btcanallive_refact/app/model"
 	"btcanallive_refact/app/trade_def"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -80,27 +81,43 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		sma1 = append(sma1, calc_sma(candle_data[:i], 5))
 		sma2 = append(sma2, calc_sma(candle_data[:i], 25))
 	}
+	var candle_year []string
+	var candle_month []string
+	var candle_day []string
+	for _, v := range candle_data {
+		t, _ := time.Parse(layout, v.Date)
 
+		candle_year = append(candle_year, fmt.Sprintf("%d", t.Year()))
+		candle_month = append(candle_month, fmt.Sprintf("%d", int(t.Month())))
+		candle_day = append(candle_day, fmt.Sprintf("%d", t.Day()))
+
+	}
 	if err := t.Execute(w, struct {
-		Title     string
-		Message   string
-		Time      time.Time
-		Profit    []Data
-		CanleDate []trade_def.BtcJpy
-		CandleMax float64
-		CandleMin float64
-		Sma1      []float64
-		Sma2      []float64
+		Title       string
+		Message     string
+		Time        time.Time
+		Profit      []Data
+		CanleDate   []trade_def.BtcJpy
+		CandleMax   float64
+		CandleMin   float64
+		Sma1        []float64
+		Sma2        []float64
+		CandleYear  []string
+		CandleMonth []string
+		CandleDay   []string
 	}{
-		Title:     title,
-		Message:   "こんにちは！",
-		Time:      time.Now(),
-		Profit:    d,
-		CanleDate: candle_data,
-		CandleMax: candle_max,
-		CandleMin: candle_min,
-		Sma1:      sma1,
-		Sma2:      sma2,
+		Title:       title,
+		Message:     "こんにちは！",
+		Time:        time.Now(),
+		Profit:      d,
+		CanleDate:   candle_data,
+		CandleMax:   candle_max,
+		CandleMin:   candle_min,
+		Sma1:        sma1,
+		Sma2:        sma2,
+		CandleYear:  candle_year,
+		CandleMonth: candle_month,
+		CandleDay:   candle_day,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
