@@ -7,13 +7,18 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
+//label
 type PositionView struct {
-	Id          int
-	Profit      float64
-	Label_color string
+	Id         int
+	ProfitText string
+	LabelColor string
+	LabelSize  int
+	Position   string
+	Shape      string
 }
 
 type Data struct {
@@ -84,22 +89,35 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 	position_time := make([]PositionView, 0)
 	for _, v_pos := range positions {
 		for i, v_candle := range candle_data {
+			color := "blue"
 			if second_to_zero(timeComvert(v_pos.Date)) == second_to_zero(timeComvert(v_candle.Date)) {
-				color := "blue"
 				if v_pos.Profit < 0 {
 					color = "red"
 				}
 				position_tmp := PositionView{
-					Id:          i,
-					Profit:      v_pos.Profit,
-					Label_color: color,
+					Id:         i,
+					ProfitText: strconv.FormatFloat(v_pos.Profit, 'f', -1, 64),
+					LabelColor: color,
+					LabelSize:  10,
+					Position:   "aboveBar",
+					Shape:      "arrowDown",
+				}
+				position_time = append(position_time, position_tmp)
+			} else if second_to_zero(timeComvert(v_pos.Fix_date)) == second_to_zero(timeComvert(v_candle.Date)) {
+				position_tmp := PositionView{
+					Id:         i,
+					ProfitText: "",
+					LabelColor: "black",
+					LabelSize:  5,
+					Position:   "belowBar",
+					Shape:      "arrowUp",
 				}
 				position_time = append(position_time, position_tmp)
 				break
+
 			}
 		}
 	}
-	fmt.Println(position_time)
 
 	if err := t.Execute(w, struct {
 		Title        string

@@ -125,18 +125,24 @@ body {
   var data = generateBarsData();
   candleSeries.setData(data);
   candleSeries.setMarkers([
-      {{range .PositionTime }}
+
+
+    {{range .PositionTime }}
     {
         time: {{.Id}},
-        position: 'aboveBar',
-        color: '{{.Label_color}}',
-        size:10,
-        shape: 'arrowDown',
-        text: '{{.Profit}}',
+        position: '{{.Position}}',
+        color: '{{.LabelColor}}',
+        size:{{.LabelSize}},
+        shape: '{{.Shape}}',
+        text: '{{.ProfitText}}',
     },
     {{end}}
+
+
+
   ])
   
+
   var smaData = calculateSMA(data, 25);
   var smaData2 = calculateSMA(data, 5);
   var smaLine = chart.addLineSeries({

@@ -109,6 +109,9 @@ func UpdateCandle(date string, h float64, l float64, c float64) {
 }
 func GetLatestCandle(date string) trade_def.BtcJpy {
 	r, err := db.Query(`select * from btc_jpy_live where date="` + date + `" limit 1;`)
+	if err != nil {
+		panic(err.Error())
+	}
 	defer r.Close()
 	var bj trade_def.BtcJpy
 	for r.Next() {
@@ -193,7 +196,7 @@ func GetCandleData() ([]trade_def.BtcJpy, float64, float64) {
 }
 
 func GetPositionData() []trade_def.Position {
-	rows, err := db.Query(`select * from btc_jpy_live_position order by date;`)
+	rows, err := db.Query(`select * from btc_jpy_live_position where Profit is not NULL order by date;`)
 	if err != nil {
 		panic(err.Error())
 	}
