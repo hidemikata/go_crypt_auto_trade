@@ -11,6 +11,7 @@ type LongSma struct {
 	sma_0 float64 //latest
 	sma_1 float64
 	sma_2 float64
+	sma_3 float64
 }
 
 type ShortSma struct {
@@ -34,7 +35,7 @@ var now_date_margine int //現在時刻を省く
 func init() {
 	short_sma = 5
 	long_sma = 25
-	long_sma_margine = 2 //解析は+２本必要
+	long_sma_margine = 3 //解析は+２本必要
 	now_date_margine = 1 //現在時刻を省く
 }
 
@@ -65,12 +66,13 @@ func (sma_obj *Sma) Analisis() {
 	records := model.GetCandleBetweenDate(past_str, latest_str)
 
 	l := LongSma{
-		sma_0: calc_sma(records[:len(records)], long_sma),
+		sma_0: calc_sma(records[:], long_sma),
 		sma_1: calc_sma(records[:len(records)-1], long_sma),
 		sma_2: calc_sma(records[:len(records)-2], long_sma),
+		sma_3: calc_sma(records[:len(records)-3], long_sma),
 	}
 	s := ShortSma{
-		sma_0: calc_sma(records[:len(records)], short_sma),
+		sma_0: calc_sma(records[:], short_sma),
 		sma_1: calc_sma(records[:len(records)-1], short_sma),
 		sma_2: calc_sma(records[:len(records)-2], short_sma),
 	}
@@ -85,7 +87,7 @@ func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
 	total := 0.0
 	start_i := len(records) - duration
 	record_latest := records[start_i:]
-	for i, _ := range record_latest {
+	for i := range record_latest {
 		total += record_latest[i].Close
 	}
 	return total / float64(len(record_latest))
@@ -121,10 +123,7 @@ func (sma_obj *Sma) IsDbCollectedData() bool {
 
 	count := model.GetNumberOfCandleBetweenDate(before_date_str, now_str)
 
-	if count-1 == num_of_collect { //00秒〜00秒なので１個余分なので引く
-		return true
-	}
-	return false
+	return count-1 == num_of_collect //00秒〜00秒なので１個余分なので引く
 }
 
 func (sma_obj *Sma) IsTradeOrder() bool {
@@ -133,6 +132,7 @@ func (sma_obj *Sma) IsTradeOrder() bool {
 		sma_obj.Short.sma_0 > sma_obj.Long.sma_0 &&
 		sma_obj.Short.sma_2 < sma_obj.Short.sma_1 &&
 		sma_obj.Short.sma_1 < sma_obj.Short.sma_0 &&
+		sma_obj.Long.sma_3 < sma_obj.Long.sma_2 &&
 		sma_obj.Long.sma_2 < sma_obj.Long.sma_1 &&
 		sma_obj.Long.sma_1 < sma_obj.Long.sma_0 {
 		return true
@@ -141,8 +141,5 @@ func (sma_obj *Sma) IsTradeOrder() bool {
 }
 
 func (sma_obj *Sma) IsTradeFix() bool {
-	if sma_obj.Short.sma_0 < sma_obj.Long.sma_0 {
-		return true
-	}
-	return false
+	return sma_obj.Short.sma_0 < sma_obj.Long.sma_0
 }

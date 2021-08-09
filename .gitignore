@@ -2,3 +2,4 @@
 .DS_Store
 btcanallive_refact
 .vscode/launch.json
+*.swp
