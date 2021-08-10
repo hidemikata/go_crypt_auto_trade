@@ -25,18 +25,22 @@ type Sma struct {
 	num_of_short int
 	Long         LongSma
 	Short        ShortSma
+	latest_min   float64
+	latest_max   float64
 }
 
 var short_sma int
 var long_sma int
 var long_sma_margine int //解析は+２本必要
 var now_date_margine int //現在時刻を省く
+var latest_min_max_num int
 
 func init() {
 	short_sma = 5
 	long_sma = 25
 	long_sma_margine = 3 //解析は+２本必要
 	now_date_margine = 1 //現在時刻を省く
+	latest_min_max_num = 5
 }
 
 func second_to_zero(t time.Time) string {
@@ -78,6 +82,25 @@ func (sma_obj *Sma) Analisis() {
 	}
 	sma_obj.Long = l
 	sma_obj.Short = s
+
+	min, max := get_min_max(records[len(records)-latest_min_max_num : len(records)-1])
+
+	sma_obj.latest_min = min
+	sma_obj.latest_max = max
+
+}
+func get_min_max(records []trade_def.BtcJpy) (min float64, max float64) {
+	min = 9999999.9
+	max = 0.0
+	for i := range records {
+		if records[i].High > max {
+			max = records[i].High
+		}
+		if records[i].Low < min {
+			min = records[i].Low
+		}
+	}
+	return min, max
 }
 
 func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
@@ -127,6 +150,20 @@ func (sma_obj *Sma) IsDbCollectedData() bool {
 }
 
 func (sma_obj *Sma) IsTradeOrder() bool {
+	if !check_rate_of_up(sma_obj) {
+		return false
+	}
+	if !check_sma(sma_obj) {
+		return false
+	}
+
+	return true
+}
+func check_rate_of_up(sma_obj *Sma) bool {
+	rate := sma_obj.latest_min * 0.005
+	return (sma_obj.latest_max - sma_obj.latest_min) > rate
+}
+func check_sma(sma_obj *Sma) bool {
 	if sma_obj.Short.sma_2 < sma_obj.Long.sma_2 &&
 		sma_obj.Short.sma_1 < sma_obj.Long.sma_1 &&
 		sma_obj.Short.sma_0 > sma_obj.Long.sma_0 &&
