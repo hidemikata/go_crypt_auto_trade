@@ -20,9 +20,12 @@ func main() {
 	real_time_ticker_ch := make(chan trade_def.Ticker, 1)
 	defer close(real_time_ticker_ch)
 	//アルゴを好きなだけnewしてappendする
-	sma_algo := trade_jadge_algo.NewSmaAlgorithm()
 	ti := make([]trade_jadge_algo.TradeInterface, 0)
+
+	sma_algo := trade_jadge_algo.NewSmaAlgorithm()
 	ti = append(ti, sma_algo)
+
+	rci_algo := trade_jadge_algo.NewRciAlgorithm()
 
 	//時間が来たらぶった切ったり再開したり。
 	time_ch := make(chan bool, 1)
