@@ -19,12 +19,12 @@ func main() {
 
 	real_time_ticker_ch := make(chan trade_def.Ticker, 1)
 	defer close(real_time_ticker_ch)
-	//$B%"%k%4$r9%$-$J$@$1(Bnew$B$7$F(Bappend$B$9$k(B
+	//アルゴを好きなだけnewしてappendする
 	sma_algo := trade_jadge_algo.NewSmaAlgorithm()
 	ti := make([]trade_jadge_algo.TradeInterface, 0)
 	ti = append(ti, sma_algo)
 
-	//$B;~4V$,Mh$?$i$V$C$?@Z$C$?$j:F3+$7$?$j!#(B
+	//時間が来たらぶった切ったり再開したり。
 	time_ch := make(chan bool, 1)
 	defer close(time_ch)
 
@@ -34,7 +34,7 @@ func main() {
 	trade_manager.ForceMarcketClose(marcket)
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go trade_manager.StartRealTimeTickGetter(marcket, real_time_ticker_ch, &wg) //$B$3$C$A$NDL?.$b;_$a$?$$$1$I;_$a$l$J$$(B
+	go trade_manager.StartRealTimeTickGetter(marcket, real_time_ticker_ch, &wg) //こっちの通信も止めたいけど止めれない
 	go trade_manager.StartAnalisis(marcket, real_time_ticker_ch, ti, time_ch)
 	go web_page.StartWebServer()
 	wg.Wait()

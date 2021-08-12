@@ -47,7 +47,7 @@ func GetNumberOfCandleBetweenDate(before_data_str string, now_str string) int {
 }
 
 func GetCandleBetweenDate(past_str string, latest_str string) []trade_def.BtcJpy {
-	//$B%G!<%?$r(BDB$B$+$i<hF@(B
+	//データをDBから取得
 	rows, err := db.Query(`select * from btc_jpy_live where date between "` + past_str + `" and "` + latest_str + `" order by date;`)
 	if err != nil {
 		panic(err.Error())

@@ -1,7 +1,7 @@
 package marcket_def
 
 import (
-	"btcanallive_refact/app/trade_def" //$B$d$j$?$/$J$$(B
+	"btcanallive_refact/app/trade_def" //やりたくない
 )
 
 type Marcket interface {

@@ -24,7 +24,7 @@ type Ticker struct {
 	Timestamp       string  `json:"timestamp"`
 	TickID          int     `json:"tick_id"`
 	BestBid         float64 `json:"best_bid"`
-	BestAsk         float64 `json:"best_ask"` //$BGc$$(B
+	BestAsk         float64 `json:"best_ask"` //買い
 	BestBidSize     float64 `json:"best_bid_size"`
 	BestAskSize     float64 `json:"best_ask_size"`
 	TotalBidDepth   float64 `json:"total_bid_depth"`

@@ -31,15 +31,15 @@ type Sma struct {
 
 var short_sma int
 var long_sma int
-var long_sma_margine int //$B2r@O$O(B+$B#2K\I,MW(B
-var now_date_margine int //$B8=:_;~9o$r>J$/(B
+var long_sma_margine int //解析は+２本必要
+var now_date_margine int //現在時刻を省く
 var latest_min_max_num int
 
 func init() {
 	short_sma = 5
 	long_sma = 25
-	long_sma_margine = 3 //$B2r@O$O(B+$B#2K\I,MW(B
-	now_date_margine = 1 //$B8=:_;~9o$r>J$/(B
+	long_sma_margine = 3 //解析は+２本必要
+	now_date_margine = 1 //現在時刻を省く
 	latest_min_max_num = 5
 }
 
@@ -122,12 +122,12 @@ func (sma_obj *Sma) IsDbCollectedData() bool {
 	now := time.Now()
 
 	if now.Second() > 50 {
-		//50$BIC$+$i#5#9IC$N4V$OBT$D(B
+		//50秒から５９秒の間は待つ
 		sleep_times := 0
 		for {
-			//tikcer$B$N%?%$%`$GB-3NDjH=CG$7$F!"(BPC$B$N%?%$%`$G2r@O%9%?!<%H$7$h$&$H$7$F$$$k$N$G;~4V$,$:$l$k(B
+			//tikcerのタイムで足確定判断して、PCのタイムで解析スタートしようとしているので時間がずれる
 			fmt.Println(now.Second(), "is_db_collected_data time is not 00 sec sleep0.5...")
-			time.Sleep(500 * time.Millisecond) //now$B;~4V$,(BX$BJ,(B59$BIC$K$J$k$3$H$,$"$k$N$G(B0.5$BICBT$D(B
+			time.Sleep(500 * time.Millisecond) //now時間がX分59秒になることがあるので0.5秒待つ
 			sleep_times++
 			now = time.Now()
 			if now.Second() == 0 {
@@ -135,7 +135,7 @@ func (sma_obj *Sma) IsDbCollectedData() bool {
 			}
 		}
 	} else if now.Second() > 10 {
-		//10$BIC0J>e:9$,=P$F$?$iMn$H$9(B
+		//10秒以上差が出てたら落とす
 		fmt.Println(now)
 		panic("")
 	}
@@ -146,7 +146,7 @@ func (sma_obj *Sma) IsDbCollectedData() bool {
 
 	count := model.GetNumberOfCandleBetweenDate(before_date_str, now_str)
 
-	return count-1 == num_of_collect //00$BIC!A(B00$BIC$J$N$G#18DM>J,$J$N$G0z$/(B
+	return count-1 == num_of_collect //00秒〜00秒なので１個余分なので引く
 }
 
 func (sma_obj *Sma) IsTradeOrder() bool {
