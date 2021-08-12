@@ -159,7 +159,7 @@ func GetProfitList() ([]float64, []string) {
 	return profits, position_start_date
 
 }
-func GetCandleData() ([]trade_def.BtcJpy, float64, float64) {
+func GetCandleData() ([]trade_def.BtcJpy, float64, float64, int) {
 	rows, err := db.Query(`select * from btc_jpy_live order by date;`)
 	if err != nil {
 		panic(err.Error())
@@ -192,7 +192,7 @@ func GetCandleData() ([]trade_def.BtcJpy, float64, float64) {
 		records = append(records, record)
 	}
 
-	return records, min, max
+	return records, min, max, len(records)
 }
 
 func GetPositionData() []trade_def.Position {

@@ -6,23 +6,23 @@ import (
 	"btcanallive_refact/app/trade_def"
 	"btcanallive_refact/app/trade_jadge_algo"
 	"fmt"
-	"time"
 	"sync"
+	"time"
 )
 
 func StartRealTimeTickGetter(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker, wg *sync.WaitGroup) {
 	fmt.Println("StartRealTimeTickGetter")
 	marcket.StartGettingRealTimeTicker(real_time_ticker_ch)
-    wg.Done()
+	wg.Done()
 }
 
 func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_def.Ticker, ti []trade_jadge_algo.TradeInterface, time_ch chan bool) {
 	fmt.Println("StartAnalisis")
 	for i := range real_time_ticker_ch {
-        if (<-time_ch == false){
-            ForceMarcketClose(marcket)
-            continue
-        }
+		if <-time_ch == false {
+			ForceMarcketClose(marcket)
+			continue
+		}
 		if !save_ticker_table(i) {
 			continue
 		}
@@ -62,15 +62,15 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 
 }
 
-func ForceMarcketClose(marcket marcket_def.Marcket){
+func ForceMarcketClose(marcket marcket_def.Marcket) {
 	fmt.Print("x")
-    latest_pos, fixed := model.GetLatestPosition()
-    if (latest_pos.Date != "" && !fixed) {
-	    fmt.Println("foce fix do")
-	    marcket.FixOrder()
-	    tick := marcket.GetTicker()
-	    model.UpdatePosition(latest_pos, tick)
-    }
+	latest_pos, fixed := model.GetLatestPosition()
+	if latest_pos.Date != "" && !fixed {
+		fmt.Println("foce fix do")
+		marcket.FixOrder()
+		tick := marcket.GetTicker()
+		model.UpdatePosition(latest_pos, tick)
+	}
 }
 
 func second_to_zero(t time.Time) string {
@@ -100,8 +100,10 @@ func save_ticker_table(t trade_def.Ticker) bool {
 	count := model.GetNumOfCandle(date)
 
 	if count == 0 {
-		fmt.Println("insert")
-		fmt.Println(time.Now())
+		fmt.Print("\ninsert-")
+		fmt.Print(time.Now(), "-")
+		_, _, _, time_count := model.GetCandleData()
+		fmt.Println(time_count)
 		model.InsertNewCandle(date, t)
 		insert = true
 	} else {

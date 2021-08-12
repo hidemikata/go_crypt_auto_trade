@@ -83,7 +83,7 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		title = "爆損"
 	}
 
-	candle_data, _, _ := model.GetCandleData()
+	candle_data, _, _, _ := model.GetCandleData()
 	positions := model.GetPositionData()
 
 	position_time := make([]PositionView, 0)
