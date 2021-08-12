@@ -31,31 +31,31 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 		fix := false
 		fmt.Println("0", buy, fix)
 		for _, ti_v := range ti {
-			if !ti_v.IsDbCollectedData() {
+			if !ti_v.IsDbCollectedData(time.Now()) {
 				buy = false
 				fix = false
 				continue
 			}
 
-			ti_v.Analisis()
+			ti_v.Analisis(time.Now())
 			buy = buy && ti_v.IsTradeOrder()
 			fix = fix || ti_v.IsTradeFix()
 			fmt.Println("-", buy, fix)
 		}
 
 		fmt.Println("1", buy, fix)
-		latest_pos, fixed := model.GetLatestPosition()
+		latest_pos, fixed := model.GetLatestPosition(false)
 
 		if buy && (latest_pos.Date == "" || fixed) {
 			fmt.Println("buy")
 			marcket.PutOrder()
 			tick := marcket.GetTicker()
-			model.InsertPosition(tick)
+			model.InsertPosition(time.Now(), tick, false)
 		} else if fix && (latest_pos.Date != "" && !fixed) {
 			fmt.Println("fix")
 			marcket.FixOrder()
 			tick := marcket.GetTicker()
-			model.UpdatePosition(latest_pos, tick)
+			model.UpdatePosition(time.Now(), latest_pos, tick, false)
 		} else {
 		}
 	}
@@ -64,12 +64,12 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 
 func ForceMarcketClose(marcket marcket_def.Marcket) {
 	fmt.Print("x")
-	latest_pos, fixed := model.GetLatestPosition()
+	latest_pos, fixed := model.GetLatestPosition(false)
 	if latest_pos.Date != "" && !fixed {
 		fmt.Println("foce fix do")
 		marcket.FixOrder()
 		tick := marcket.GetTicker()
-		model.UpdatePosition(latest_pos, tick)
+		model.UpdatePosition(time.Now(), latest_pos, tick, false)
 	}
 }
 

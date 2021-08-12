@@ -8,8 +8,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func GetLatestPosition() (trade_def.Position, bool) {
-	rows, err := db.Query(`select * from btc_jpy_live_position order by date desc limit 1;`)
+func GetLatestPosition(is_backtest bool) (trade_def.Position, bool) {
+
+	table_name := "btc_jpy_live_position"
+	if is_backtest {
+		table_name = "btc_jpy_live_position_backtest"
+	}
+
+	rows, err := db.Query(`select * from ` + table_name + ` order by date desc limit 1;`)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -220,4 +226,12 @@ func GetPositionData() []trade_def.Position {
 	}
 
 	return records
+}
+func GetProfitBacktest() float64 {
+	var profit float64
+	err := db.QueryRow(`select sum(profit) from btc_jpy_live_position_backtest;`).Scan(&profit)
+	if err != nil {
+		panic(err.Error())
+	}
+	return profit
 }

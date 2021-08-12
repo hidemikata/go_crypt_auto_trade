@@ -27,6 +27,8 @@ type Sma struct {
 	Short        ShortSma
 	latest_min   float64
 	latest_max   float64
+	BestAsk      float64
+	BestBid      float64
 }
 
 var short_sma int
@@ -58,8 +60,7 @@ func NewSmaAlgorithm() *Sma {
 		num_of_short: short_sma,
 	}
 }
-func (sma_obj *Sma) Analisis() {
-	now := time.Now()
+func (sma_obj *Sma) Analisis(now time.Time) {
 	margine_duration := time.Duration(now_date_margine)
 	now_before_1min := now.Add(-(time.Minute * margine_duration))
 	long_sma_duration := time.Duration(long_sma + long_sma_margine + now_date_margine)
@@ -88,6 +89,12 @@ func (sma_obj *Sma) Analisis() {
 	sma_obj.latest_min = min
 	sma_obj.latest_max = max
 
+	sma_obj.BestAsk = records[len(records)-1].Close
+	sma_obj.BestBid = sma_obj.BestAsk //-xxxyen(spread)
+
+}
+func (sma_obj *Sma) GetLatestAskBid() (float64, float64) {
+	return sma_obj.BestAsk, sma_obj.BestBid
 }
 func get_min_max(records []trade_def.BtcJpy) (min float64, max float64) {
 	min = 9999999.9
@@ -116,10 +123,9 @@ func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
 	return total / float64(len(record_latest))
 }
 
-func (sma_obj *Sma) IsDbCollectedData() bool {
+func (sma_obj *Sma) IsDbCollectedData(now time.Time) bool {
 	num_of_collect := long_sma + long_sma_margine + now_date_margine
 	num_of_duration := time.Duration(num_of_collect)
-	now := time.Now()
 
 	if now.Second() > 50 {
 		//50秒から５９秒の間は待つ
