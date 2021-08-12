@@ -150,10 +150,12 @@ func (sma_obj *Sma) IsDbCollectedData() bool {
 }
 
 func (sma_obj *Sma) IsTradeOrder() bool {
-	if !check_rate_of_up(sma_obj) {
+	if !check_sma(sma_obj) {
+		fmt.Println("sma ng")
 		return false
 	}
-	if !check_sma(sma_obj) {
+	if !check_rate_of_up(sma_obj) {
+		fmt.Println("rate of up ng")
 		return false
 	}
 
@@ -161,7 +163,9 @@ func (sma_obj *Sma) IsTradeOrder() bool {
 }
 func check_rate_of_up(sma_obj *Sma) bool {
 	rate := sma_obj.latest_min * 0.005
-	return (sma_obj.latest_max - sma_obj.latest_min) > rate
+	fmt.Print(sma_obj.latest_max, sma_obj.latest_min, rate)
+	fmt.Print((sma_obj.latest_max - sma_obj.latest_min))
+	return (sma_obj.latest_max - sma_obj.latest_min) < rate
 }
 func check_sma(sma_obj *Sma) bool {
 	if sma_obj.Short.sma_2 < sma_obj.Long.sma_2 &&
