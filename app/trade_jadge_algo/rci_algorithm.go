@@ -7,8 +7,8 @@ func NewRciAlgorithm() *Rci {
 	return &Rci{}
 }
 
-func (obj *Rci) IsDbCollectedData() {
-
+func (obj *Rci) IsDbCollectedData() bool {
+	return true
 }
 func (obj *Rci) Analisis() {
 
