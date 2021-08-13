@@ -27,20 +27,21 @@ type Sma struct {
 	Short        ShortSma
 	latest_min   float64
 	latest_max   float64
-	BestAsk      float64
-	BestBid      float64
+	min_max_rate float64
 }
 
 var short_sma int
 var long_sma int
-var long_sma_margine int //解析は+２本必要
+var min_max_rate_number float64
+var long_sma_margine int //解析は+3本必要
 var now_date_margine int //現在時刻を省く
 var latest_min_max_num int
 
 func init() {
 	short_sma = 5
 	long_sma = 25
-	long_sma_margine = 3 //解析は+２本必要
+	min_max_rate_number = 0.005
+	long_sma_margine = 3 //解析は+3本必要
 	now_date_margine = 1 //現在時刻を省く
 	latest_min_max_num = 5
 }
@@ -58,12 +59,13 @@ func NewSmaAlgorithm() *Sma {
 	return &Sma{
 		num_of_long:  long_sma,
 		num_of_short: short_sma,
+		min_max_rate: min_max_rate_number,
 	}
 }
 func (sma_obj *Sma) Analisis(now time.Time) {
 	margine_duration := time.Duration(now_date_margine)
 	now_before_1min := now.Add(-(time.Minute * margine_duration))
-	long_sma_duration := time.Duration(long_sma + long_sma_margine + now_date_margine)
+	long_sma_duration := time.Duration(sma_obj.num_of_long + long_sma_margine + now_date_margine)
 	now_before_long_sma := now.Add(-(time.Minute * long_sma_duration))
 	latest_str := second_to_zero(now_before_1min)
 	past_str := second_to_zero(now_before_long_sma)
@@ -71,10 +73,10 @@ func (sma_obj *Sma) Analisis(now time.Time) {
 	records := model.GetCandleBetweenDate(past_str, latest_str)
 
 	l := LongSma{
-		sma_0: calc_sma(records[:], long_sma),
-		sma_1: calc_sma(records[:len(records)-1], long_sma),
-		sma_2: calc_sma(records[:len(records)-2], long_sma),
-		sma_3: calc_sma(records[:len(records)-3], long_sma),
+		sma_0: calc_sma(records[:], sma_obj.num_of_long),
+		sma_1: calc_sma(records[:len(records)-1], sma_obj.num_of_long),
+		sma_2: calc_sma(records[:len(records)-2], sma_obj.num_of_long),
+		sma_3: calc_sma(records[:len(records)-3], sma_obj.num_of_long),
 	}
 	s := ShortSma{
 		sma_0: calc_sma(records[:], short_sma),
@@ -88,13 +90,6 @@ func (sma_obj *Sma) Analisis(now time.Time) {
 
 	sma_obj.latest_min = min
 	sma_obj.latest_max = max
-
-	sma_obj.BestAsk = records[len(records)-1].Close
-	sma_obj.BestBid = sma_obj.BestAsk //-xxxyen(spread)
-
-}
-func (sma_obj *Sma) GetLatestAskBid() (float64, float64) {
-	return sma_obj.BestAsk, sma_obj.BestBid
 }
 func get_min_max(records []trade_def.BtcJpy) (min float64, max float64) {
 	min = 9999999.9
@@ -124,7 +119,7 @@ func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
 }
 
 func (sma_obj *Sma) IsDbCollectedData(now time.Time) bool {
-	num_of_collect := long_sma + long_sma_margine + now_date_margine
+	num_of_collect := sma_obj.num_of_long + long_sma_margine + now_date_margine
 	num_of_duration := time.Duration(num_of_collect)
 
 	if now.Second() > 50 {
@@ -157,20 +152,20 @@ func (sma_obj *Sma) IsDbCollectedData(now time.Time) bool {
 
 func (sma_obj *Sma) IsTradeOrder() bool {
 	if !check_sma(sma_obj) {
-		fmt.Println("sma ng")
+		//fmt.Println("sma ng")
 		return false
 	}
 	if !check_rate_of_up(sma_obj) {
-		fmt.Println("rate of up ng")
+		//fmt.Println("rate of up ng")
 		return false
 	}
 
 	return true
 }
 func check_rate_of_up(sma_obj *Sma) bool {
-	rate := sma_obj.latest_min * 0.005
-	fmt.Print(sma_obj.latest_max, sma_obj.latest_min, rate)
-	fmt.Print((sma_obj.latest_max - sma_obj.latest_min))
+	rate := sma_obj.latest_min * sma_obj.min_max_rate
+	//	fmt.Print(sma_obj.latest_max, sma_obj.latest_min, rate)
+	//	fmt.Print((sma_obj.latest_max - sma_obj.latest_min))
 	return (sma_obj.latest_max - sma_obj.latest_min) < rate
 }
 func check_sma(sma_obj *Sma) bool {
@@ -189,4 +184,11 @@ func check_sma(sma_obj *Sma) bool {
 
 func (sma_obj *Sma) IsTradeFix() bool {
 	return sma_obj.Short.sma_0 < sma_obj.Long.sma_0
+}
+
+func (sma_obj *Sma) SetParam(sma ...int) {
+	fmt.Println("sma set param ", sma)
+	sma_obj.num_of_long = sma[0]
+	sma_obj.num_of_short = sma[1]
+	sma_obj.min_max_rate = float64(sma[2]) / 1000
 }

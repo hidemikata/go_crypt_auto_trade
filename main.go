@@ -28,11 +28,14 @@ func main() {
 	rci_algo := trade_jadge_algo.NewRciAlgorithm()
 	ti = append(ti, rci_algo)
 
+	//backtestmode!!
 	is_backtest := true
 	if is_backtest {
 		trade_manager.BacktestStart(ti)
 		return
 	}
+	//<--backtestmode
+
 	//時間が来たらぶった切ったり再開したり。
 	time_ch := make(chan bool, 1)
 	defer close(time_ch)
