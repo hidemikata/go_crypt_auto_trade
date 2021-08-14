@@ -229,27 +229,27 @@ func GetPositionData() []trade_def.Position {
 
 	return records
 }
-func GetProfitBacktest() float64 {
+func GetProfitBacktest() (float64, int) {
 
 	var count int
-	err := db.QueryRow(`select count(*) from btc_jpy_live_position_backtest;`).Scan(&count)
+	err := db.QueryRow(`select count(*) from btc_jpy_live_position_backtest where Profit is not NULL;`).Scan(&count)
 	if err != nil {
 		panic(err.Error())
 	}
 	if count == 0 {
 		fmt.Println("position non.")
-		return 0.0
+		return 0.0, count
 	}
 
 	var profit float64
-	err = db.QueryRow(`select sum(profit) from btc_jpy_live_position_backtest;`).Scan(&profit)
+	err = db.QueryRow(`select sum(profit) from btc_jpy_live_position_backtest where Profit is not NULL;`).Scan(&profit)
 	if err != nil {
 		panic(err.Error())
 	}
-	return profit
+	return profit, count
 }
 
-func BacktestInsertTotalProfit(now time.Time, total_profit float64, sma_long int, sma_short int, sma_min_max_rate float64, rci int) {
+func BacktestInsertTotalProfit(now time.Time, total_profit float64, sma_long int, sma_short int, sma_min_max_rate float64, rci int, position_count int) {
 	date_str := now.Format(format1)
 
 	query := `insert into backtest_profit values("` + date_str + `", ` +
@@ -257,7 +257,8 @@ func BacktestInsertTotalProfit(now time.Time, total_profit float64, sma_long int
 		strconv.Itoa(sma_long) + `, ` +
 		strconv.Itoa(sma_short) + `, ` +
 		strconv.FormatFloat(sma_min_max_rate, 'f', -1, 64) + `, ` +
-		strconv.Itoa(rci) + `);`
+		strconv.Itoa(rci) + `, ` +
+		strconv.Itoa(position_count) + `);`
 
 	fmt.Println("insert test result:", query)
 	_, err := db.Exec(query)

@@ -24,6 +24,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 
 	loc, _ := time.LoadLocation("Asia/Tokyo")
 	alna_minute_max := 23040
+	//alna_minute_max = 1440
 
 	//rciloop
 	for rci_test_param := 5; rci_test_param <= 100; rci_test_param++ {
@@ -34,6 +35,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 		model.ClearBacktestPosition()
 		for time_i := 0; time_i < alna_minute_max; time_i++ {
 			anal_time := time.Date(2021, 7, 28, 6, time_i, 0, 0, loc)
+			//anal_time = time.Date(2021, 8, 2, 23, time_i, 0, 0, loc)
 			//fmt.Println("start:", anal_time)
 
 			buy := true
@@ -68,10 +70,10 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 			} else {
 			}
 		}
-		profit := model.GetProfitBacktest()
+		profit, position_count := model.GetProfitBacktest()
 		fmt.Println("profit=", profit)
 
-		model.BacktestInsertTotalProfit(time.Now(), profit, 25, 5, 0.005, rci_test_param)
+		model.BacktestInsertTotalProfit(time.Now(), profit, 25, 5, 0.005, rci_test_param, position_count)
 	}
 }
 
