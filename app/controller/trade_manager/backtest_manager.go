@@ -31,13 +31,13 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 	//alna_minute_max = 440
 
 	//rciloop
-	for rci_test_param := 5; rci_test_param <= 100; rci_test_param++ {
+	for rci_test_param := 51; rci_test_param <= 51; rci_test_param++ {
 		set_test_param("*trade_jadge_algo.Rci", ti, rci_test_param)
 		fmt.Println("start rci = :", rci_test_param, "time=", time.Now())
 
-		for sma_long_i := 25; sma_long_i <= 25; sma_long_i++ {
-			for sma_short_i := 5; sma_short_i <= 5; sma_short_i++ {
-				for sma_up_rate := 3; sma_up_rate <= 15; sma_up_rate++ {
+		for sma_long_i := 15; sma_long_i <= 30; sma_long_i++ {
+			for sma_short_i := 5; sma_short_i <= 10; sma_short_i++ {
+				for sma_up_rate := 5; sma_up_rate <= 5; sma_up_rate++ {
 					set_test_param("*trade_jadge_algo.Sma", ti, sma_long_i, sma_short_i, sma_up_rate)
 					model.ClearBacktestPosition()
 					for time_i := 0; time_i < alna_minute_max; time_i++ {
