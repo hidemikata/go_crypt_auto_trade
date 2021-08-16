@@ -38,8 +38,8 @@ var now_date_margine int //現在時刻を省く
 var latest_min_max_num int
 
 func init() {
-	short_sma = 5
-	long_sma = 25
+	short_sma = 10
+	long_sma = 26
 	min_max_rate_number = 0.005
 	long_sma_margine = 3 //解析は+3本必要
 	now_date_margine = 1 //現在時刻を省く

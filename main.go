@@ -29,7 +29,7 @@ func main() {
 	ti = append(ti, rci_algo)
 
 	//backtestmode!!
-	is_backtest := true
+	is_backtest := false
 	if is_backtest {
 		trade_manager.BacktestStart(ti)
 		return
