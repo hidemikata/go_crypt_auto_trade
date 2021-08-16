@@ -35,8 +35,8 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 		set_test_param("*trade_jadge_algo.Rci", ti, rci_test_param)
 		fmt.Println("start rci = :", rci_test_param, "time=", time.Now())
 
-		for sma_long_i := 15; sma_long_i <= 30; sma_long_i++ {
-			for sma_short_i := 5; sma_short_i <= 10; sma_short_i++ {
+		for sma_long_i := 26; sma_long_i <= 26; sma_long_i++ {
+			for sma_short_i := 10; sma_short_i <= 10; sma_short_i++ {
 				for sma_up_rate := 5; sma_up_rate <= 5; sma_up_rate++ {
 					set_test_param("*trade_jadge_algo.Sma", ti, sma_long_i, sma_short_i, sma_up_rate)
 					model.ClearBacktestPosition()
