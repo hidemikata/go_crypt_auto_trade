@@ -2,6 +2,7 @@ package model
 
 import (
 	"btcanallive_refact/app/trade_def"
+	"btcanallive_refact/config"
 	"database/sql"
 	"fmt"
 	"strconv"
@@ -9,6 +10,15 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+var backtest_local_candle_data []trade_def.BtcJpy
+
+func init() {
+	if config.Config.BackTest == "true" {
+		//バックテストはインメモリーで行う
+		backtest_local_candle_data, _, _, _ = GetCandleData()
+	}
+}
 
 func GetLatestPosition(is_backtest bool) (trade_def.Position, bool) {
 
@@ -44,8 +54,27 @@ func GetLatestPosition(is_backtest bool) (trade_def.Position, bool) {
 	//null.Valid true = not null
 	return pos, null.Valid
 }
+func backtest_data_sequence(past_str string, latest_str string) []trade_def.BtcJpy {
+	range_past_i := 0
+	range_latest_i := 0
+	flg := true
+	for i, v := range backtest_local_candle_data {
+		if flg && (timeComvert(v.Date).Equal(timeComvert(past_str)) || timeComvert(v.Date).After(timeComvert(past_str))) {
+			range_past_i = i
+			flg = false
+		} else if timeComvert(v.Date).Equal(timeComvert(latest_str)) || timeComvert(v.Date).After(timeComvert(latest_str)) {
+			range_latest_i = i
+			break
+		}
+	}
+	return backtest_local_candle_data[range_past_i : range_latest_i+1] //+1: 一個前までになるので
+}
 
 func GetNumberOfCandleBetweenDate(before_data_str string, now_str string) int {
+	if config.Config.BackTest == "true" {
+		return len(backtest_data_sequence(before_data_str, now_str))
+	}
+
 	var count int
 	err := db.QueryRow(`select count(*) from btc_jpy_live where date between "` + before_data_str + `" and "` + now_str + `";`).Scan(&count)
 	if err != nil {
@@ -55,6 +84,10 @@ func GetNumberOfCandleBetweenDate(before_data_str string, now_str string) int {
 }
 
 func GetCandleBetweenDate(past_str string, latest_str string) []trade_def.BtcJpy {
+	if config.Config.BackTest == "true" {
+		return backtest_data_sequence(past_str, latest_str)
+	}
+
 	//データをDBから取得
 	rows, err := db.Query(`select * from btc_jpy_live where date between "` + past_str + `" and "` + latest_str + `" order by date;`)
 	if err != nil {
@@ -266,4 +299,11 @@ func BacktestInsertTotalProfit(now time.Time, total_profit float64, sma_long int
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+var layout = "2006-01-02 15:04:05"
+
+func timeComvert(date string) time.Time {
+	t, _ := time.Parse(layout, date)
+	return t
 }

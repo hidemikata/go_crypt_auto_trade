@@ -6,6 +6,7 @@ import (
 	"btcanallive_refact/app/controller/web_page"
 	"btcanallive_refact/app/trade_def"
 	"btcanallive_refact/app/trade_jadge_algo"
+	"btcanallive_refact/config"
 	"fmt"
 	"sync"
 	"time"
@@ -29,8 +30,8 @@ func main() {
 	ti = append(ti, rci_algo)
 
 	//backtestmode!!
-	is_backtest := false
-	if is_backtest {
+	is_backtest := config.Config.BackTest
+	if is_backtest == "true" {
 		trade_manager.BacktestStart(ti)
 		return
 	}
