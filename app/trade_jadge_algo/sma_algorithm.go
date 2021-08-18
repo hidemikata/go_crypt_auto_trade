@@ -79,9 +79,9 @@ func (sma_obj *Sma) Analisis(now time.Time) {
 		sma_3: calc_sma(records[:len(records)-3], sma_obj.num_of_long),
 	}
 	s := ShortSma{
-		sma_0: calc_sma(records[:], short_sma),
-		sma_1: calc_sma(records[:len(records)-1], short_sma),
-		sma_2: calc_sma(records[:len(records)-2], short_sma),
+		sma_0: calc_sma(records[:], sma_obj.num_of_short),
+		sma_1: calc_sma(records[:len(records)-1], sma_obj.num_of_short),
+		sma_2: calc_sma(records[:len(records)-2], sma_obj.num_of_short),
 	}
 	sma_obj.Long = l
 	sma_obj.Short = s
