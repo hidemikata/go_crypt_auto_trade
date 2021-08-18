@@ -31,7 +31,9 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 	//alna_minute_max = 440
 
 	//rciloop
-	for rci_test_param := 51; rci_test_param <= 51; rci_test_param++ {
+	for rci_test_param := 0; rci_test_param <= 0; rci_test_param++ {
+		//rciでtrueを返すようにしているので要修正
+
 		set_test_param("*trade_jadge_algo.Rci", ti, rci_test_param)
 		fmt.Println("start rci = :", rci_test_param, "time=", time.Now())
 

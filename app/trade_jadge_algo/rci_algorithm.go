@@ -79,6 +79,7 @@ func remove(slice []trade_def.BtcJpy, s int) []trade_def.BtcJpy {
 }
 
 func (obj *Rci) IsTradeOrder() bool {
+	return true
 	if obj.rci < -70 {
 		return true
 	}

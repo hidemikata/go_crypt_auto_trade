@@ -72,7 +72,7 @@ func backtest_data_sequence(past_str string, latest_str string) []trade_def.BtcJ
 
 func GetNumberOfCandleBetweenDate(before_data_str string, now_str string) int {
 	if config.Config.BackTest == "true" {
-		return len(backtest_data_sequence(before_data_str, now_str))
+		//	return len(backtest_data_sequence(before_data_str, now_str))
 	}
 
 	var count int
@@ -85,7 +85,7 @@ func GetNumberOfCandleBetweenDate(before_data_str string, now_str string) int {
 
 func GetCandleBetweenDate(past_str string, latest_str string) []trade_def.BtcJpy {
 	if config.Config.BackTest == "true" {
-		return backtest_data_sequence(past_str, latest_str)
+		//	return backtest_data_sequence(past_str, latest_str)
 	}
 
 	//データをDBから取得
