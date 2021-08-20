@@ -1,3 +1,20 @@
+# インスタンス生成する
+sudo apt update
+wget https://golang.org/dl/go1.16.7.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.16.7.linux-amd64.tar.gz
+vim .bashrc
+   export PATH=$PATH:/usr/local/go/bin
+sudo apt install mysql-server mysql-client
+sudo systemctl enable mysql
+sudo mysql -uroot -p
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+mysql> FLUSH PRIVILEGES;
+
+git clone https://github.com/hidemikata/go_crypt_auto_trade.git
+mv go_crypt_auto_trade btcanallive_refact
+cd btcanallive_refact
+go get
+
 
 # config/config.ini
   
@@ -18,7 +35,7 @@ CREATE TABLE `btc_jpy_live` (
   `high` float DEFAULT NULL,
   `low` float DEFAULT NULL,
   `close` float DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
 CREATE TABLE `btc_jpy_live_position` (
   `date` datetime DEFAULT NULL,
@@ -28,9 +45,31 @@ CREATE TABLE `btc_jpy_live_position` (
   `fix_price` float DEFAULT NULL,
   `profit` float DEFAULT NULL,
   `symbol` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `backtest_profit` (
+  `date` datetime DEFAULT NULL,
+  `total_profit` float DEFAULT NULL,
+  `sma_long` int DEFAULT NULL,
+  `sma_short` int DEFAULT NULL,
+  `sma_min_max_rate` float DEFAULT NULL,
+  `rci` int DEFAULT NULL,
+  `position_count` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
+  CREATE TABLE `btc_jpy_live_position_backtest` (
+  `date` datetime DEFAULT NULL,
+  `buy_or_sell` varchar(10) DEFAULT NULL,
+  `price` float DEFAULT NULL,
+  `fix_date` datetime DEFAULT NULL,
+  `fix_price` float DEFAULT NULL,
+  `profit` float DEFAULT NULL,
+  `symbol` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+#ローソク足データインポート
+mysql -uroot -p -D coin_data < btc_jpy_live.sql
+
 # run
 go run main.go
 
