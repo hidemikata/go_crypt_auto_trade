@@ -47,7 +47,7 @@ func get_test_params() []backtest_pc_table {
 			}
 		}
 	}
-	fmt.Println(backtest_pc_number_use_table)
+
 	my_test_params := make([]backtest_pc_table, 0)
 	for i, v := range backtest_pc_number_use_table {
 		tme_devide := backtest_pc_number_use_table[i].test_num % config.Config.NumOfPc
