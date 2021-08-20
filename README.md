@@ -70,6 +70,22 @@ CREATE TABLE `backtest_profit` (
 #ローソク足データインポート
 mysql -uroot -p -D coin_data < btc_jpy_live.sql
 
+# mysqlcnf
+/etc/mysql/mysql.conf.d/mysqld.cnf
+
+key_buffer_size         = 1024M
+max_allowed_packet      = 16M
+thread_stack            = 1M
+thread_cache_size       = 8
+
+query_cache_limit       = 2048M
+query_cache_size        = 2048M
+query_cache_type=1
+innodb_buffer_pool_size=1024M
+sort_buffer_size=2048M
+read_buffer_size=2048M
+innodb_thread_concurrency=128
+
 # run
 go run main.go
 
