@@ -36,7 +36,7 @@ func get_test_params() []backtest_pc_table {
 	backtest_pc_number_use_table := make([]backtest_pc_table, 0)
 
 	test_num := 1
-	for rci_test_param := 5; rci_test_param <= 100; rci_test_param++ {
+	for rci_test_param := 20; rci_test_param <= 50; rci_test_param++ {
 		for sma_long_i := 20; sma_long_i <= 50; sma_long_i++ {
 			for sma_short_i := 3; sma_short_i <= 18; sma_short_i++ {
 				for sma_up_rate := 4; sma_up_rate <= 4; sma_up_rate++ {
@@ -68,7 +68,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 	fmt.Println("backteststart")
 
 	loc, _ := time.LoadLocation("Asia/Tokyo")
-	alna_minute_max := 23040
+	alna_minute_max := 33120 //50日
 	//alna_minute_max = 440
 
 	for _, param_v := range test_parmas {
