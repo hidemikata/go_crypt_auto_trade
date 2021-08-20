@@ -37,9 +37,9 @@ func get_test_params() []backtest_pc_table {
 
 	test_num := 1
 	for rci_test_param := 3; rci_test_param <= 100; rci_test_param++ {
-		for sma_long_i := 29; sma_long_i <= 29; sma_long_i++ {
-			for sma_short_i := 15; sma_short_i <= 15; sma_short_i++ {
-				for sma_up_rate := 1; sma_up_rate <= 6; sma_up_rate++ {
+		for sma_long_i := 20; sma_long_i <= 50; sma_long_i++ {
+			for sma_short_i := 3; sma_short_i <= 18; sma_short_i++ {
+				for sma_up_rate := 4; sma_up_rate <= 7; sma_up_rate++ {
 					param := backtest_pc_table{test_num, rci_test_param, sma_long_i, sma_short_i, sma_up_rate}
 					backtest_pc_number_use_table = append(backtest_pc_number_use_table, param)
 					test_num++
