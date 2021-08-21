@@ -63,7 +63,7 @@ func get_test_params() []backtest_pc_table {
 }
 func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 
-	test_parmas := get_test_params()
+	test_paramas := get_test_params()
 
 	fmt.Println("backteststart")
 
@@ -71,7 +71,8 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 	alna_minute_max := 33120 //50日
 	//alna_minute_max = 440
 
-	for _, param_v := range test_parmas {
+	for param_i, param_v := range test_paramas {
+		fmt.Println("test count", param_i, "/", len(test_paramas))
 		set_test_param("*trade_jadge_algo.Rci", ti, param_v.rci)
 		fmt.Println("start rci = :", param_v.rci, "time=", time.Now())
 
