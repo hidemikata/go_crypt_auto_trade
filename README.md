@@ -15,6 +15,8 @@ mv go_crypt_auto_trade btcanallive_refact
 cd btcanallive_refact
 go get
 
+sudo timedatectl set-timezone Asia/Tokyo
+timedatectl
 
 # config/config.ini
   
