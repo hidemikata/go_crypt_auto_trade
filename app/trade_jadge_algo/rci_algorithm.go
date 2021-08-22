@@ -82,7 +82,7 @@ func (obj *Rci) IsTradeOrder() bool {
 	if obj.rci_long == 0 {
 		return true
 	}
-	if obj.rci < -70 {
+	if obj.rci < 0 {
 		return true
 	}
 	//fmt.Println(" rci ng:", obj.rci)

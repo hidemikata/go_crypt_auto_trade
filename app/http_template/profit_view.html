@@ -102,8 +102,10 @@ body {
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
 
 
-<div id="time_is">0000</div>
 
+<div id="time_is_rci">0000</div>
+<div id="rci">rci</div>
+<div id="time_is">0000</div>
 
 <script>
   document.body.style.position = 'relative';
@@ -216,7 +218,6 @@ body {
     },
     {{end}}
     ]
-    console.log(res)
     return res;
   }
 
@@ -285,6 +286,30 @@ body {
     time_is.innerHTML = param.time;
 }
 chart.subscribeClick(handleClick);
+  </script>
+  <script>
+    var rci_chart = LightweightCharts.createChart(rci, { width: 1200, height: 200 });
+    var lineSeries = rci_chart.addLineSeries();
+    lineSeries.setData([
+
+    //{ time: '1', value: 80.01 },
+    {{range $i, $v := .RciData }}
+    {
+      time: {{.Time}},
+      value:{{.Value}},
+    },
+    {{end}}
+    ]);
+//    rci_chart.timeScale().fitContent();
+    rci_chart.subscribeClick(handleClickRci);
+
+  function handleClickRci(param) {
+    if (!param.point) {
+        return;
+    }
+    var time_is_rci = document.getElementById('time_is_rci');
+    time_is_rci.innerHTML = param.time;
+}
   </script>
 </body>
 </html>

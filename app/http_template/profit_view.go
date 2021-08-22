@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -14,7 +15,7 @@ import (
 //label
 type PositionView struct {
 	Id         int
-	ProfitText string
+	ProText    string
 	LabelColor string
 	LabelSize  int
 	Position   string
@@ -26,6 +27,10 @@ type Data struct {
 	ProfitSum  float64
 	Profit     float64
 	DateSecond int
+}
+type Rci struct {
+	Time  int
+	Value float64
 }
 
 func checkAuth(r *http.Request) bool {
@@ -119,6 +124,23 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	//rci
+	rci_long := 30
+	rci_data := make([]Rci, 0)
+	var time_index int
+	for time_index = 0; time_index < rci_long-1; time_index++ {
+		rci_data = append(rci_data, Rci{time_index + 1, 0})
+	}
+	for canlde_i, _ := range candle_data {
+		if canlde_i+rci_long > len(candle_data) {
+			break
+		}
+		calc_data := candle_data[canlde_i : canlde_i+rci_long-1]
+		rci := calc_rci(calc_data)
+		rci_data = append(rci_data, Rci{time_index + 1, rci})
+		time_index++
+	}
+
 	if err := t.Execute(w, struct {
 		Title        string
 		Message      string
@@ -126,6 +148,7 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		Profit       []Data
 		CanleData    []trade_def.BtcJpy
 		PositionTime []PositionView
+		RciData      []Rci
 	}{
 		Title:        title,
 		Message:      "こんにちは！",
@@ -133,6 +156,7 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		Profit:       d,
 		CanleData:    candle_data,
 		PositionTime: position_time,
+		RciData:      rci_data,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
@@ -149,4 +173,43 @@ func second_to_zero(t time.Time) string {
 	m := fmt.Sprintf("%02d", int(t.Month()))
 	y := fmt.Sprintf("%02d", t.Year())
 	return y + "-" + m + "-" + d + " " + h + ":" + min + ":00"
+}
+
+func calc_rci(records []trade_def.BtcJpy) float64 {
+	tmp := make([]trade_def.BtcJpy, len(records))
+	copy(tmp, records)
+
+	price_order := make([]trade_def.BtcJpy, 0)
+
+	for j := 0; j < len(records); j++ {
+		var top_price_data trade_def.BtcJpy
+		var tmp_i int
+		for i, v := range tmp {
+			if v.Close >= top_price_data.Close {
+				top_price_data = v
+				tmp_i = i
+			}
+		}
+		price_order = append(price_order, top_price_data)
+		tmp = remove(tmp, tmp_i)
+	}
+
+	var date_price_square float64
+	var hizuke_kakaku_sa float64
+	for i_r, v_r := range records {
+		for i_po, v_po := range price_order {
+			if v_po.Date == v_r.Date {
+				hizuke_kakaku_sa = float64((len(records) - i_r) - (i_po + 1))
+				date_price_square = date_price_square + math.Abs(hizuke_kakaku_sa*hizuke_kakaku_sa)
+				break
+			}
+		}
+	}
+	bunbo := (len(records)*len(records) - 1) * len(records)
+	rci_tmp := float64(date_price_square) * 6 / float64(bunbo)
+	rci := (1 - rci_tmp) * 100
+	return rci
+}
+func remove(slice []trade_def.BtcJpy, s int) []trade_def.BtcJpy {
+	return append(slice[:s], slice[s+1:]...)
 }
