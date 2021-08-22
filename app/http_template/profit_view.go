@@ -15,7 +15,7 @@ import (
 //label
 type PositionView struct {
 	Id         int
-	ProText    string
+	ProfitText string
 	LabelColor string
 	LabelSize  int
 	Position   string
