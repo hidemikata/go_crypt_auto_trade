@@ -17,7 +17,7 @@ var rci_now_date_margine int //現在時刻を省く
 var rci_long int
 
 func init() {
-	rci_long = 51
+	rci_long = 0
 	rci_now_date_margine = 1 //現在時刻を省く
 }
 
