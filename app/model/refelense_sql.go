@@ -282,7 +282,7 @@ func GetProfitBacktest() (float64, int) {
 	return profit, count
 }
 
-func BacktestInsertTotalProfit(now time.Time, total_profit float64, sma_long int, sma_short int, sma_min_max_rate float64, rci int, position_count int) {
+func BacktestInsertTotalProfit(now time.Time, total_profit float64, sma_long int, sma_short int, sma_min_max_rate float64, rci int, position_count int, rci_buy_rate int) {
 	date_str := now.Format(format1)
 
 	query := `insert into backtest_profit values("` + date_str + `", ` +
@@ -291,7 +291,8 @@ func BacktestInsertTotalProfit(now time.Time, total_profit float64, sma_long int
 		strconv.Itoa(sma_short) + `, ` +
 		strconv.FormatFloat(sma_min_max_rate, 'f', -1, 64) + `, ` +
 		strconv.Itoa(rci) + `, ` +
-		strconv.Itoa(position_count) + `);`
+		strconv.Itoa(position_count) + `, ` +
+		strconv.Itoa(rci_buy_rate) + `);`
 
 	fmt.Println("insert test result:", query)
 	_, err := db.Exec(query)

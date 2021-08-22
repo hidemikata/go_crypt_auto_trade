@@ -9,22 +9,26 @@ import (
 )
 
 type Rci struct {
-	rci_long int
-	rci      float64
+	rci_long     int
+	rci_buy_rate float64 //これ以下なら買う-100から100
+	rci          float64
 }
 
 var rci_now_date_margine int //現在時刻を省く
 var rci_long int
+var rci_buy_rate float64
 
 func init() {
 	rci_long = 30
+	rci_buy_rate = 0.0
 	rci_now_date_margine = 1 //現在時刻を省く
 }
 
 func NewRciAlgorithm() *Rci {
 	return &Rci{
-		rci_long: rci_long,
-		rci:      0.0,
+		rci_long:     rci_long,
+		rci_buy_rate: rci_buy_rate,
+		rci:          0.0,
 	}
 }
 
@@ -82,7 +86,7 @@ func (obj *Rci) IsTradeOrder() bool {
 	if obj.rci_long == 0 {
 		return true
 	}
-	if obj.rci < 0 {
+	if obj.rci < obj.rci_buy_rate {
 		return true
 	}
 	//fmt.Println(" rci ng:", obj.rci)
@@ -129,4 +133,5 @@ func (obj *Rci) IsDbCollectedData(now time.Time) bool {
 func (obj *Rci) SetParam(rci ...int) {
 	fmt.Println("rci set param ", rci)
 	obj.rci_long = rci[0]
+	obj.rci_buy_rate = float64(rci[1])
 }

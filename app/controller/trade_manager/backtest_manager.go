@@ -11,18 +11,19 @@ import (
 )
 
 type backtest_pc_table struct {
-	test_num    int
-	rci         int
-	sma_long    int
-	sma_short   int
-	sma_up_rate int
+	test_num          int
+	rci               int
+	rci_test_buy_rate int
+	sma_long          int
+	sma_short         int
+	sma_up_rate       int
 }
 
 func set_test_param(ti_string string, ti []trade_jadge_algo.TradeInterface, param ...int) {
 
 	for _, ti_v := range ti {
 		if reflect.TypeOf(ti_v).String() == "*trade_jadge_algo.Rci" && ti_string == "*trade_jadge_algo.Rci" {
-			ti_v.SetParam(param[0])
+			ti_v.SetParam(param[0], param[1])
 			return
 		} else if reflect.TypeOf(ti_v).String() == "*trade_jadge_algo.Sma" && ti_string == "*trade_jadge_algo.Sma" {
 			ti_v.SetParam(param[0], param[1], param[2])
@@ -36,13 +37,15 @@ func get_test_params() []backtest_pc_table {
 	backtest_pc_number_use_table := make([]backtest_pc_table, 0)
 
 	test_num := 1
-	for rci_test_param := 30; rci_test_param <= 30; rci_test_param++ { //0 rci return ture
-		for sma_long_i := 30; sma_long_i <= 30; sma_long_i++ {
-			for sma_short_i := 8; sma_short_i <= 8; sma_short_i++ {
-				for sma_up_rate := 10; sma_up_rate <= 10; sma_up_rate++ {
-					param := backtest_pc_table{test_num, rci_test_param, sma_long_i, sma_short_i, sma_up_rate}
-					backtest_pc_number_use_table = append(backtest_pc_number_use_table, param)
-					test_num++
+	for rci_test_param := 10; rci_test_param <= 50; rci_test_param++ { //0 rci return ture
+		for rci_test_buy_rate := -70; rci_test_buy_rate <= -30; rci_test_buy_rate++ {
+			for sma_long_i := 30; sma_long_i <= 30; sma_long_i++ {
+				for sma_short_i := 8; sma_short_i <= 8; sma_short_i++ {
+					for sma_up_rate := 10; sma_up_rate <= 10; sma_up_rate++ {
+						param := backtest_pc_table{test_num, rci_test_param, rci_test_buy_rate, sma_long_i, sma_short_i, sma_up_rate}
+						backtest_pc_number_use_table = append(backtest_pc_number_use_table, param)
+						test_num++
+					}
 				}
 			}
 		}
@@ -72,7 +75,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 
 	for param_i, param_v := range test_paramas {
 		fmt.Println("test count", param_i, "/", len(test_paramas))
-		set_test_param("*trade_jadge_algo.Rci", ti, param_v.rci)
+		set_test_param("*trade_jadge_algo.Rci", ti, param_v.rci, param_v.rci_test_buy_rate)
 		fmt.Println("start rci = :", param_v.rci, "time=", time.Now())
 
 		set_test_param("*trade_jadge_algo.Sma", ti, param_v.sma_long, param_v.sma_short, param_v.sma_up_rate)
@@ -121,7 +124,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 		profit, position_count = model.GetProfitBacktest()
 		fmt.Println("profit=", profit)
 
-		model.BacktestInsertTotalProfit(time.Now(), profit, param_v.sma_long, param_v.sma_short, float64(param_v.sma_up_rate)/1000, param_v.rci, position_count)
+		model.BacktestInsertTotalProfit(time.Now(), profit, param_v.sma_long, param_v.sma_short, float64(param_v.sma_up_rate)/1000, param_v.rci, position_count, param_v.rci_test_buy_rate)
 	}
 }
 
