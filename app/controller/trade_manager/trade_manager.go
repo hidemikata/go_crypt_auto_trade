@@ -24,8 +24,6 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 			continue
 		}
 
-		model.InsertAskBid(i)
-
 		if !save_ticker_table(i) {
 			continue
 		}
