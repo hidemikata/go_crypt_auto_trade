@@ -308,3 +308,36 @@ func timeComvert(date string) time.Time {
 	t, _ := time.Parse(layout, date)
 	return t
 }
+
+func InsertAskBid(t trade_def.Ticker) {
+	date := truncate_minute(t.Timestamp)
+
+	query_insert := `insert into ask_bid values("` + date + `"` +
+		", " + strconv.FormatFloat(t.BestAsk, 'f', -1, 64) +
+		", " + strconv.FormatFloat(t.BestBid, 'f', -1, 64) + ");"
+
+	_, err2 := db.Exec(query_insert)
+
+	if err2 != nil {
+		panic(err2.Error())
+	}
+}
+
+func second_to_zero(t time.Time) string {
+	min := fmt.Sprintf("%02d", t.Minute())
+	h := fmt.Sprintf("%02d", t.Hour())
+	d := fmt.Sprintf("%02d", t.Day())
+	m := fmt.Sprintf("%02d", int(t.Month()))
+	y := fmt.Sprintf("%02d", t.Year())
+	return y + "-" + m + "-" + d + " " + h + ":" + min + ":00"
+}
+
+func truncate_minute(date string) string {
+	t := timeComvertAdd9hour(date)
+	return second_to_zero(t)
+}
+
+func timeComvertAdd9hour(date string) time.Time {
+	t, _ := time.Parse(time.RFC3339, date)
+	return t.Add(time.Hour * 9)
+}

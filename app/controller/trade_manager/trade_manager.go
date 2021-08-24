@@ -23,6 +23,9 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 			ForceMarcketClose(marcket)
 			continue
 		}
+
+		model.InsertAskBid(i)
+
 		if !save_ticker_table(i) {
 			continue
 		}
@@ -118,5 +121,6 @@ func save_ticker_table(t trade_def.Ticker) bool {
 		}
 		model.UpdateCandle(date, h, l, c)
 	}
+
 	return insert
 }
