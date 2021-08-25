@@ -37,8 +37,8 @@ func get_test_params() []backtest_pc_table {
 	backtest_pc_number_use_table := make([]backtest_pc_table, 0)
 
 	test_num := 1
-	for rci_test_param := 10; rci_test_param <= 50; rci_test_param++ { //0 rci return ture
-		for rci_test_buy_rate := -70; rci_test_buy_rate <= -30; rci_test_buy_rate++ {
+	for rci_test_param := 43; rci_test_param <= 43; rci_test_param++ { //0 rci return ture
+		for rci_test_buy_rate := -38; rci_test_buy_rate <= -38; rci_test_buy_rate++ {
 			for sma_long_i := 30; sma_long_i <= 30; sma_long_i++ {
 				for sma_short_i := 8; sma_short_i <= 8; sma_short_i++ {
 					for sma_up_rate := 10; sma_up_rate <= 10; sma_up_rate++ {

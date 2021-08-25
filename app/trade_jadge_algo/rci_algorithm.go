@@ -19,8 +19,8 @@ var rci_long int
 var rci_buy_rate float64
 
 func init() {
-	rci_long = 30
-	rci_buy_rate = 0.0
+	rci_long = 43
+	rci_buy_rate = -38.0
 	rci_now_date_margine = 1 //現在時刻を省く
 }
 
