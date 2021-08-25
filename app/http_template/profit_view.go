@@ -3,6 +3,7 @@ package http_template
 import (
 	"btcanallive_refact/app/model"
 	"btcanallive_refact/app/trade_def"
+	"btcanallive_refact/config"
 	"fmt"
 	"html/template"
 	"log"
@@ -125,7 +126,10 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//rci
-	rci_long := 30
+	rci_long := config.Config.RciLong
+	if rci_long == 0 { //0は無効なので、バグるから43でも入れておく。
+		rci_long = 43
+	}
 	rci_data := make([]Rci, 0)
 	var time_index int
 	for time_index = 0; time_index < rci_long-1; time_index++ {
@@ -149,6 +153,8 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		CanleData    []trade_def.BtcJpy
 		PositionTime []PositionView
 		RciData      []Rci
+		SmaLong      int
+		SmaShort     int
 	}{
 		Title:        title,
 		Message:      "こんにちは！",
@@ -157,6 +163,8 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 		CanleData:    candle_data,
 		PositionTime: position_time,
 		RciData:      rci_data,
+		SmaLong:      config.Config.SmaLong,
+		SmaShort:     config.Config.SmaShort,
 	}); err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}

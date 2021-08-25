@@ -3,6 +3,7 @@ package trade_jadge_algo
 import (
 	"btcanallive_refact/app/model"
 	"btcanallive_refact/app/trade_def"
+	"btcanallive_refact/config"
 	"fmt"
 	"time"
 )
@@ -30,19 +31,13 @@ type Sma struct {
 	min_max_rate float64
 }
 
-var short_sma int
-var long_sma int
-var min_max_rate_number float64
 var long_sma_margine int //解析は+3本必要
 var now_date_margine int //現在時刻を省く
 var latest_min_max_num int
 
 func init() {
-	short_sma = 8
-	long_sma = 30
-	min_max_rate_number = 0.01 //0.007以上はあんま関係ない
-	long_sma_margine = 3       //解析は+3本必要
-	now_date_margine = 1       //現在時刻を省く
+	long_sma_margine = 3 //解析は+3本必要
+	now_date_margine = 1 //現在時刻を省く
 	latest_min_max_num = 5
 }
 
@@ -57,9 +52,9 @@ func second_to_zero(t time.Time) string {
 
 func NewSmaAlgorithm() *Sma {
 	return &Sma{
-		num_of_long:  long_sma,
-		num_of_short: short_sma,
-		min_max_rate: min_max_rate_number,
+		num_of_long:  config.Config.SmaLong,
+		num_of_short: config.Config.SmaShort,
+		min_max_rate: config.Config.SmaUpToRate,
 	}
 }
 func (sma_obj *Sma) Analisis(now time.Time) {
@@ -137,7 +132,7 @@ func (sma_obj *Sma) IsDbCollectedData(now time.Time) bool {
 		}
 	} else if now.Second() > 10 {
 		//10秒以上差が出てたら落とす
-		fmt.Println(now)
+		fmt.Println(now, now.Second())
 		panic("")
 	}
 

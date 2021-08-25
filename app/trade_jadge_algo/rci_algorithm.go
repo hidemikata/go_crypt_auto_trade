@@ -3,6 +3,7 @@ package trade_jadge_algo
 import (
 	"btcanallive_refact/app/model"
 	"btcanallive_refact/app/trade_def"
+	"btcanallive_refact/config"
 	"fmt"
 	"math"
 	"time"
@@ -15,19 +16,15 @@ type Rci struct {
 }
 
 var rci_now_date_margine int //現在時刻を省く
-var rci_long int
-var rci_buy_rate float64
 
 func init() {
-	rci_long = 43
-	rci_buy_rate = -38.0
 	rci_now_date_margine = 1 //現在時刻を省く
 }
 
 func NewRciAlgorithm() *Rci {
 	return &Rci{
-		rci_long:     rci_long,
-		rci_buy_rate: rci_buy_rate,
+		rci_long:     config.Config.RciLong,
+		rci_buy_rate: config.Config.RciRate,
 		rci:          0.0,
 	}
 }
@@ -99,7 +96,7 @@ func (obj *Rci) IsTradeFix() bool {
 }
 
 func (obj *Rci) IsDbCollectedData(now time.Time) bool {
-	num_of_collect := rci_long + rci_now_date_margine
+	num_of_collect := obj.rci_long + rci_now_date_margine
 	num_of_duration := time.Duration(num_of_collect)
 
 	if now.Second() > 50 {

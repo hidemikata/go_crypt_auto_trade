@@ -31,7 +31,7 @@ func main() {
 
 	//backtestmode!!
 	is_backtest := config.Config.BackTest
-	if is_backtest == "true" {
+	if is_backtest {
 		trade_manager.BacktestStart(ti)
 		return
 	}

@@ -30,9 +30,6 @@
       width: 900,
       height: 500,
       axes: {
-  //      x: {
-  //        0: {side: 'top'}
-  //      }
       }
     };
 
@@ -146,8 +143,8 @@ body {
   ])
   
 
-  var smaData = calculateSMA(data, 30);
-  var smaData2 = calculateSMA(data, 8);
+  var smaData = calculateSMA(data, {{.SmaLong}});
+  var smaData2 = calculateSMA(data, {{.SmaShort}});
   var smaLine = chart.addLineSeries({
     color: 'rgba(4, 30, 0, 1)',
     lineWidth: 2,

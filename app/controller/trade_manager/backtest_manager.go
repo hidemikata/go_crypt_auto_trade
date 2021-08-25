@@ -110,7 +110,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 
 			tick := trade_def.Ticker{}
 			tick.BestAsk = candle_date.Close
-			tick.BestBid = candle_date.Close - 2000 //spread
+			tick.BestBid = candle_date.Close - float64(config.Config.Spread) //spread
 
 			if buy && (latest_pos.Date == "" || fixed) {
 				fmt.Println("test buy")

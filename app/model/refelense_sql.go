@@ -14,7 +14,7 @@ import (
 var backtest_local_candle_data []trade_def.BtcJpy
 
 func init() {
-	if config.Config.BackTestInMemory == "true" {
+	if config.Config.BackTestInMemory {
 		//バックテストはインメモリーで行う
 		backtest_local_candle_data, _, _, _ = GetCandleData()
 	}
@@ -71,7 +71,7 @@ func backtest_data_sequence(past_str string, latest_str string) []trade_def.BtcJ
 }
 
 func GetNumberOfCandleBetweenDate(before_data_str string, now_str string) int {
-	if config.Config.BackTestInMemory == "true" {
+	if config.Config.BackTestInMemory {
 		return len(backtest_data_sequence(before_data_str, now_str))
 	}
 
@@ -84,7 +84,7 @@ func GetNumberOfCandleBetweenDate(before_data_str string, now_str string) int {
 }
 
 func GetCandleBetweenDate(past_str string, latest_str string) []trade_def.BtcJpy {
-	if config.Config.BackTestInMemory == "true" {
+	if config.Config.BackTestInMemory {
 		return backtest_data_sequence(past_str, latest_str)
 	}
 
