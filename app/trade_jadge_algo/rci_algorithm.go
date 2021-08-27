@@ -132,3 +132,7 @@ func (obj *Rci) SetParam(rci ...int) {
 	obj.rci_long = rci[0]
 	obj.rci_buy_rate = float64(rci[1])
 }
+
+func (obj *Rci) FixRealTick(t trade_def.Ticker) bool {
+	return false
+}

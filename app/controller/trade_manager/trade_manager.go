@@ -23,8 +23,19 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 			ForceMarcketClose(marcket)
 			continue
 		}
+		chart_insert := save_ticker_table(i)
 
-		if !save_ticker_table(i) {
+		for _, ti_fix_v := range ti {
+			if ti_fix_v.FixRealTick(i) {
+				_, fixed_position := model.GetLatestPosition(false)
+				if !fixed_position {
+					ForceMarcketClose(marcket)
+				}
+				break
+			}
+		}
+		if !chart_insert {
+			//新規足じゃない
 			continue
 		}
 

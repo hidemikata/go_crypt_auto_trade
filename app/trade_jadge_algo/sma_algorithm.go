@@ -187,3 +187,9 @@ func (sma_obj *Sma) SetParam(sma ...int) {
 	sma_obj.num_of_short = sma[1]
 	sma_obj.min_max_rate = float64(sma[2]) / 1000
 }
+func (sma_obj *Sma) FixRealTick(t trade_def.Ticker) bool {
+	if sma_obj.Long.sma_0 > t.BestBid {
+		return true
+	}
+	return false
+}
