@@ -99,9 +99,10 @@ body {
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
 
 
-
+<!--
 <div id="time_is_rci">0000</div>
 <div id="rci">rci</div>
+-->
 <div id="time_is">0000</div>
 
 <script>
@@ -121,9 +122,17 @@ body {
     },
   });
   
-  var candleSeries = chart.addCandlestickSeries();
+  var candleSeries = chart.addCandlestickSeries({
+    priceScaleId: 'b',
+    scaleMargins: {top: 0.2, bottom: 0.2},
+
+  });
+
+
   var data = generateBarsData();
   candleSeries.setData(data);
+
+  //candleSeriesここになんか設定する。
   candleSeries.setMarkers([
 
 
@@ -137,20 +146,40 @@ body {
         text: '{{.ProfitText}}',
     },
     {{end}}
-
-
-
   ])
   
+  var rciSeries = chart.addLineSeries({
+  priceFormat: {type: 'percent', precision: 3},
+  priceScaleId: 'a',
+  scaleMargins: {top: 0.8, bottom: 0},
+
+  });
+  rciSeries.setData([
+
+    //{ time: '1', value: 80.01 },
+    {{range $i, $v := .RciData }}
+    {
+      time: {{.Time}},
+      value:{{.Value}},
+    },
+    {{end}}
+    ]);
+
 
   var smaData = calculateSMA(data, {{.SmaLong}});
   var smaData2 = calculateSMA(data, {{.SmaShort}});
   var smaLine = chart.addLineSeries({
+  priceFormat: {type: 'percent', precision: 3},
+    priceScaleId: 'b',
+    scaleMargins: {top: 0.2, bottom: 0.2},
     color: 'rgba(4, 30, 0, 1)',
     lineWidth: 2,
   });
   
   var smaLine2 = chart.addLineSeries({
+  priceFormat: {type: 'percent', precision: 3},
+    priceScaleId: 'b',
+    scaleMargins: {top: 0.2, bottom: 0.2},
     color: 'rgba(4, 111, 232, 1)',
     lineWidth: 2,
   });

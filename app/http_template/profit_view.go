@@ -90,7 +90,7 @@ func ProfitView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	candle_data, _, _, _ := model.GetCandleData()
-	candle_data = candle_data[len(candle_data)-500:]
+	candle_data = candle_data[len(candle_data)-1500:]
 	positions := model.GetPositionData()
 
 	position_time := make([]PositionView, 0)
