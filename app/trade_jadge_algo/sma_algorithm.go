@@ -22,13 +22,15 @@ type ShortSma struct {
 }
 
 type Sma struct {
-	num_of_long  int
-	num_of_short int
-	Long         LongSma
-	Short        ShortSma
-	latest_min   float64
-	latest_max   float64
-	min_max_rate float64
+	num_of_long          int
+	num_of_short         int
+	Long                 LongSma
+	Short                ShortSma
+	latest_min           float64          //latest_min_max_num間での最小
+	latest_max           float64          //latest_min_max_num間での最大
+	latest_candle        trade_def.BtcJpy //直近のローソク足
+	min_max_rate         float64          //latest_min_max_num間での変動幅見送り比率
+	min_max_rate_latest1 float64          //直前ローソク足の変動幅見送り比率
 }
 
 var long_sma_margine int //解析は+3本必要
@@ -52,9 +54,10 @@ func second_to_zero(t time.Time) string {
 
 func NewSmaAlgorithm() *Sma {
 	return &Sma{
-		num_of_long:  config.Config.SmaLong,
-		num_of_short: config.Config.SmaShort,
-		min_max_rate: config.Config.SmaUpToRate,
+		num_of_long:          config.Config.SmaLong,
+		num_of_short:         config.Config.SmaShort,
+		min_max_rate:         config.Config.SmaUpToRate,
+		min_max_rate_latest1: config.Config.SmaUpToRateLatest1,
 	}
 }
 func (sma_obj *Sma) Analisis(now time.Time) {
@@ -85,6 +88,7 @@ func (sma_obj *Sma) Analisis(now time.Time) {
 
 	sma_obj.latest_min = min
 	sma_obj.latest_max = max
+	sma_obj.latest_candle = records[len(records)-1]
 }
 func get_min_max(records []trade_def.BtcJpy) (min float64, max float64) {
 	min = 9999999.9
@@ -161,7 +165,17 @@ func check_rate_of_up(sma_obj *Sma) bool {
 	rate := sma_obj.latest_min * sma_obj.min_max_rate
 	//	fmt.Print(sma_obj.latest_max, sma_obj.latest_min, rate)
 	//	fmt.Print((sma_obj.latest_max - sma_obj.latest_min))
-	return (sma_obj.latest_max - sma_obj.latest_min) < rate
+	if (sma_obj.latest_max - sma_obj.latest_min) > rate {
+		return false
+	}
+
+	rate = sma_obj.latest_candle.Close * sma_obj.min_max_rate_latest1
+
+	if (sma_obj.latest_candle.High - sma_obj.latest_candle.Low) > rate {
+		return false
+	}
+
+	return true
 }
 func check_sma(sma_obj *Sma) bool {
 	if sma_obj.Short.sma_2 < sma_obj.Long.sma_2 &&

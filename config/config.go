@@ -5,18 +5,19 @@ import (
 )
 
 type ConfigList struct {
-	ApiKey           string
-	ApiSecret        string
-	BackTest         bool
-	NumOfPc          int
-	PcNoumber        int
-	BackTestInMemory bool
-	Spread           int
-	SmaLong          int
-	SmaShort         int
-	SmaUpToRate      float64
-	RciLong          int
-	RciRate          float64
+	ApiKey             string
+	ApiSecret          string
+	BackTest           bool
+	NumOfPc            int
+	PcNoumber          int
+	BackTestInMemory   bool
+	Spread             int
+	SmaLong            int
+	SmaShort           int
+	SmaUpToRate        float64
+	SmaUpToRateLatest1 float64
+	RciLong            int
+	RciRate            float64
 }
 
 var Config ConfigList
@@ -32,10 +33,11 @@ func init() {
 		BackTestInMemory: cfg.Section("backtest").Key("backtest_inmemory").String() == "true" && cfg.Section("backtest").Key("backtest").String() == "true",
 		Spread:           cfg.Section("backtest").Key("spread").MustInt(),
 
-		SmaLong:     cfg.Section("analisys").Key("sma_long").MustInt(),
-		SmaShort:    cfg.Section("analisys").Key("sma_short").MustInt(),
-		SmaUpToRate: cfg.Section("analisys").Key("sma_up_to_rate").MustFloat64(),
-		RciLong:     cfg.Section("analisys").Key("rci_long").MustInt(),
-		RciRate:     cfg.Section("analisys").Key("rci_rate").MustFloat64(),
+		SmaLong:            cfg.Section("analisys").Key("sma_long").MustInt(),
+		SmaShort:           cfg.Section("analisys").Key("sma_short").MustInt(),
+		SmaUpToRate:        cfg.Section("analisys").Key("sma_up_to_rate").MustFloat64(),
+		SmaUpToRateLatest1: cfg.Section("analisys").Key("sma_up_to_rate_latest1").MustFloat64(),
+		RciLong:            cfg.Section("analisys").Key("rci_long").MustInt(),
+		RciRate:            cfg.Section("analisys").Key("rci_rate").MustFloat64(),
 	}
 }
