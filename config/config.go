@@ -13,6 +13,7 @@ type ConfigList struct {
 	BackTestInMemory   bool
 	Spread             int
 	SmaLong            int
+	SmaLongLong        int
 	SmaShort           int
 	SmaUpToRate        float64
 	SmaUpToRateLatest1 float64
@@ -34,6 +35,7 @@ func init() {
 		Spread:           cfg.Section("backtest").Key("spread").MustInt(),
 
 		SmaLong:            cfg.Section("analisys").Key("sma_long").MustInt(),
+		SmaLongLong:        cfg.Section("analisys").Key("sma_long_long").MustInt(),
 		SmaShort:           cfg.Section("analisys").Key("sma_short").MustInt(),
 		SmaUpToRate:        cfg.Section("analisys").Key("sma_up_to_rate").MustFloat64(),
 		SmaUpToRateLatest1: cfg.Section("analisys").Key("sma_up_to_rate_latest1").MustFloat64(),

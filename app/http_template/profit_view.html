@@ -59,9 +59,9 @@
       legend: 'none'
     };
 
-    var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+    //var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
 
-    chart.draw(data, options);
+    //chart.draw(data, options);
   }
 </script>
 
@@ -96,7 +96,9 @@ body {
 
 <div id="line_top_x"></div>
 
+<!--
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
+-->
 
 
 <!--
@@ -168,6 +170,7 @@ body {
 
   var smaData = calculateSMA(data, {{.SmaLong}});
   var smaData2 = calculateSMA(data, {{.SmaShort}});
+  var smaData3 = calculateSMA(data, 900);
   var smaLine = chart.addLineSeries({
   priceFormat: {type: 'percent', precision: 3},
     priceScaleId: 'b',
@@ -183,8 +186,17 @@ body {
     color: 'rgba(4, 111, 232, 1)',
     lineWidth: 2,
   });
+  var smaLine3 = chart.addLineSeries({
+  priceFormat: {type: 'percent', precision: 3},
+    priceScaleId: 'b',
+    scaleMargins: {top: 0.2, bottom: 0.2},
+    color: 'rgba(4, 30, 0, 1)',
+    lineWidth: 2,
+  });
+  
   smaLine.setData(smaData);
   smaLine2.setData(smaData2);
+  smaLine3.setData(smaData3);
   
   var legend = document.createElement('div');
   legend.className = 'sma-legend';
