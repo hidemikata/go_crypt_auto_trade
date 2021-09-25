@@ -87,10 +87,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 			anal_time := time.Date(2021, 7, 29, 6, time_i, 0, 0, loc)
 			//anal_time = time.Date(2021, 8, 2, 23, time_i, 0, 0, loc)
 			//fmt.Println("start:", anal_time)
-			fmt.Println(time_i, ":", anal_time)
-			if !(anal_time.Hour() == 23 || anal_time.Hour() == 0 || anal_time.Hour() == 1 || anal_time.Hour() == 2 || anal_time.Hour() == 3) { //移動平均線900は１５時間で、8時開始から１５時間のの間は無視する。
-				continue
-			}
+
 			buy := true
 			fix := false
 			for _, ti_v := range ti {
