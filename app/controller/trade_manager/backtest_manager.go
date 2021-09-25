@@ -37,11 +37,11 @@ func get_test_params() []backtest_pc_table {
 	backtest_pc_number_use_table := make([]backtest_pc_table, 0)
 
 	test_num := 1
-	for rci_test_param := 43; rci_test_param <= 43; rci_test_param++ { //0 rci return ture
+	for rci_test_param := 0; rci_test_param <= 0; rci_test_param++ { //0 rci return ture
 		for rci_test_buy_rate := -38; rci_test_buy_rate <= -38; rci_test_buy_rate++ {
 			for sma_long_i := 30; sma_long_i <= 30; sma_long_i++ {
 				for sma_short_i := 8; sma_short_i <= 8; sma_short_i++ {
-					for sma_up_rate := 10; sma_up_rate <= 10; sma_up_rate++ {
+					for sma_up_rate := 10; sma_up_rate <= 10; sma_up_rate++ { //設定時に１０００で割る
 						param := backtest_pc_table{test_num, rci_test_param, rci_test_buy_rate, sma_long_i, sma_short_i, sma_up_rate}
 						backtest_pc_number_use_table = append(backtest_pc_number_use_table, param)
 						test_num++
@@ -70,8 +70,7 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 	fmt.Println("backteststart")
 
 	loc, _ := time.LoadLocation("Asia/Tokyo")
-	alna_minute_max := 33120 //50日
-	//alna_minute_max = 440
+	alna_minute_max := 70000
 
 	for param_i, param_v := range test_paramas {
 		fmt.Println("test count", param_i, "/", len(test_paramas))
@@ -85,10 +84,13 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 		profit = 0.0
 		position_count = 0
 		for time_i := 0; time_i < alna_minute_max; time_i++ {
-			anal_time := time.Date(2021, 7, 28, 6, time_i, 0, 0, loc)
+			anal_time := time.Date(2021, 7, 29, 6, time_i, 0, 0, loc)
 			//anal_time = time.Date(2021, 8, 2, 23, time_i, 0, 0, loc)
 			//fmt.Println("start:", anal_time)
-
+			fmt.Println(time_i, ":", anal_time)
+			if !(anal_time.Hour() == 23 || anal_time.Hour() == 0 || anal_time.Hour() == 1 || anal_time.Hour() == 2 || anal_time.Hour() == 3) { //移動平均線900は１５時間で、8時開始から１５時間のの間は無視する。
+				continue
+			}
 			buy := true
 			fix := false
 			for _, ti_v := range ti {
@@ -101,7 +103,6 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 				ti_v.Analisis(anal_time)
 				buy = buy && ti_v.IsTradeOrder()
 				fix = fix || ti_v.IsTradeFix()
-				//fmt.Println("test", buy, fix)
 			}
 
 			latest_pos, fixed := model.GetLatestPosition(true)

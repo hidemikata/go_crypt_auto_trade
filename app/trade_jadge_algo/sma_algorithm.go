@@ -42,12 +42,12 @@ type Sma struct {
 	min_max_rate_latest1 float64          //直前ローソク足の変動幅見送り比率
 }
 
-var long_sma_margine int //解析は+3本必要
+var sma_margine int      //解析は+3本必要
 var now_date_margine int //現在時刻を省く
 var latest_min_max_num int
 
 func init() {
-	long_sma_margine = 3 //解析は+3本必要
+	sma_margine = 3      //解析は+3本必要
 	now_date_margine = 1 //現在時刻を省く
 	latest_min_max_num = 5
 }
@@ -73,7 +73,7 @@ func NewSmaAlgorithm() *Sma {
 func (sma_obj *Sma) Analisis(now time.Time) {
 	margine_duration := time.Duration(now_date_margine)
 	now_before_1min := now.Add(-(time.Minute * margine_duration))
-	long_sma_duration := time.Duration(sma_obj.num_of_long + long_sma_margine + now_date_margine)
+	long_sma_duration := time.Duration(sma_obj.num_of_long_long + sma_margine + now_date_margine)
 	now_before_long_sma := now.Add(-(time.Minute * long_sma_duration))
 	latest_str := second_to_zero(now_before_1min)
 	past_str := second_to_zero(now_before_long_sma)
@@ -136,7 +136,7 @@ func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
 }
 
 func (sma_obj *Sma) IsDbCollectedData(now time.Time) bool {
-	num_of_collect := sma_obj.num_of_long_long + long_sma_margine + now_date_margine
+	num_of_collect := sma_obj.num_of_long_long + sma_margine + now_date_margine
 	num_of_duration := time.Duration(num_of_collect)
 
 	if now.Second() > 50 {
@@ -163,17 +163,14 @@ func (sma_obj *Sma) IsDbCollectedData(now time.Time) bool {
 	before_date_str := second_to_zero(before_date)
 
 	count := model.GetNumberOfCandleBetweenDate(before_date_str, now_str)
-
 	return count-1 == num_of_collect //00秒〜00秒なので１個余分なので引く
 }
 
 func (sma_obj *Sma) IsTradeOrder() bool {
 	if !check_sma(sma_obj) {
-		//fmt.Println("sma ng")
 		return false
 	}
 	if !check_rate_of_up(sma_obj) {
-		//fmt.Println("rate of up ng")
 		return false
 	}
 
@@ -181,8 +178,6 @@ func (sma_obj *Sma) IsTradeOrder() bool {
 }
 func check_rate_of_up(sma_obj *Sma) bool {
 	rate := sma_obj.latest_min * sma_obj.min_max_rate
-	//	fmt.Print(sma_obj.latest_max, sma_obj.latest_min, rate)
-	//	fmt.Print((sma_obj.latest_max - sma_obj.latest_min))
 	if (sma_obj.latest_max - sma_obj.latest_min) > rate {
 		return false
 	}
@@ -212,7 +207,8 @@ func check_sma(sma_obj *Sma) bool {
 }
 
 func (sma_obj *Sma) IsTradeFix() bool {
-	return sma_obj.Short.sma_0 < sma_obj.Long.sma_0
+	//デッドクロスでもいい
+	return sma_obj.latest_candle.Close < sma_obj.Long.sma_0
 }
 
 func (sma_obj *Sma) SetParam(sma ...int) {
