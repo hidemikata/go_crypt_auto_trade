@@ -208,7 +208,7 @@ func check_sma(sma_obj *Sma) bool {
 
 func (sma_obj *Sma) IsTradeFix() bool {
 	//デッドクロスでもいい
-	return sma_obj.latest_candle.Close < sma_obj.Long.sma_0
+	return sma_obj.Short.sma_0 < sma_obj.Long.sma_0
 }
 
 func (sma_obj *Sma) SetParam(sma ...int) {
