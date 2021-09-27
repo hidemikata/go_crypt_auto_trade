@@ -127,12 +127,26 @@ func (obj *Rci) IsDbCollectedData(now time.Time) bool {
 	return count-1 == num_of_collect //00秒〜00秒なので１個余分なので引く
 }
 
-func (obj *Rci) SetParam(rci ...int) {
-	fmt.Println("rci set param ", rci)
-	obj.rci_long = rci[0]
-	obj.rci_buy_rate = float64(rci[1])
+func (obj *Rci) BacktestSetParam(params []int) {
+	fmt.Println("rci set param ", params)
+	obj.rci_long = params[0]
+	obj.rci_buy_rate = float64(params[1])
 }
 
 func (obj *Rci) FixRealTick(t trade_def.Ticker) bool {
 	return false
+}
+
+func (obj *Rci) CreateBacktestParams() []BacktestParams {
+
+	p := make([]BacktestParams, 0)
+	for rci_test_param := 0; rci_test_param <= 0; rci_test_param++ { //0 rci return ture
+		for rci_test_buy_rate := -38; rci_test_buy_rate <= -37; rci_test_buy_rate++ {
+			p = append(p, BacktestParams{obj, []int{rci_test_param, rci_test_buy_rate}})
+			fmt.Println(p)
+		}
+	}
+
+	return p
+
 }

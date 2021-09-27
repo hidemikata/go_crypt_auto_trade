@@ -6,78 +6,75 @@ import (
 	"btcanallive_refact/app/trade_jadge_algo"
 	"btcanallive_refact/config"
 	"fmt"
-	"reflect"
 	"time"
 )
 
-type backtest_pc_table struct {
-	test_num          int
-	rci               int
-	rci_test_buy_rate int
-	sma_long          int
-	sma_short         int
-	sma_up_rate       int
-}
+func is_my_test(test_num int) bool {
 
-func set_test_param(ti_string string, ti []trade_jadge_algo.TradeInterface, param ...int) {
+	test_num = test_num + 1
+	target_num := test_num % config.Config.NumOfPc
+	if target_num == 0 && config.Config.NumOfPc == config.Config.PcNoumber {
+		return true
+	} else if target_num == config.Config.PcNoumber {
+		return true
+	} else {
+		return false
+	}
+}
+func create_all_set(all [][]trade_jadge_algo.BacktestParams, p []trade_jadge_algo.BacktestParams) [][]trade_jadge_algo.BacktestParams {
+	all_params := make([][]trade_jadge_algo.BacktestParams, 0)
+	for _, v_all := range all {
+		for _, v_p := range p {
+			tmp := v_all
+			tmp = append(tmp, v_p)
+			all_params = append(all_params, tmp)
+		}
+	}
+	return all_params
+}
+func get_test_params(ti []trade_jadge_algo.TradeInterface) [][]trade_jadge_algo.BacktestParams {
+
+	ti_params := make([][]trade_jadge_algo.BacktestParams, 0)
+	all_params := make([][]trade_jadge_algo.BacktestParams, 0)
 
 	for _, ti_v := range ti {
-		if reflect.TypeOf(ti_v).String() == "*trade_jadge_algo.Rci" && ti_string == "*trade_jadge_algo.Rci" {
-			ti_v.SetParam(param[0], param[1])
-			return
-		} else if reflect.TypeOf(ti_v).String() == "*trade_jadge_algo.Sma" && ti_string == "*trade_jadge_algo.Sma" {
-			ti_v.SetParam(param[0], param[1], param[2])
-			return
+		ti_params = append(ti_params, ti_v.CreateBacktestParams())
+	}
+
+	for _, vv := range ti_params[0] {
+		all_params = append(all_params, []trade_jadge_algo.BacktestParams{vv})
+	}
+	if len(ti_params) >= 2 {
+		for i := 1; i < len(ti_params); i++ {
+			all_params = create_all_set(all_params, ti_params[i])
 		}
 	}
-	panic("not found trade interface")
-}
-func get_test_params() []backtest_pc_table {
 
-	backtest_pc_number_use_table := make([]backtest_pc_table, 0)
-
-	test_num := 1
-	for rci_test_param := 0; rci_test_param <= 0; rci_test_param++ { //0 rci return ture
-		for rci_test_buy_rate := -38; rci_test_buy_rate <= -38; rci_test_buy_rate++ {
-			for sma_long_i := 30; sma_long_i <= 30; sma_long_i++ {
-				for sma_short_i := 8; sma_short_i <= 8; sma_short_i++ {
-					for sma_up_rate := 10; sma_up_rate <= 10; sma_up_rate++ { //設定時に１０００で割る
-						param := backtest_pc_table{test_num, rci_test_param, rci_test_buy_rate, sma_long_i, sma_short_i, sma_up_rate}
-						backtest_pc_number_use_table = append(backtest_pc_number_use_table, param)
-						test_num++
-					}
-				}
-			}
-		}
-	}
-	my_test_params := make([]backtest_pc_table, 0)
-	for i, v := range backtest_pc_number_use_table {
-		tme_devide := backtest_pc_number_use_table[i].test_num % config.Config.NumOfPc
-		if tme_devide == 0 && config.Config.NumOfPc == config.Config.PcNoumber {
-			my_test_params = append(my_test_params, v)
-		} else if tme_devide == config.Config.PcNoumber {
-			my_test_params = append(my_test_params, v)
-		} else {
-
-		}
-	}
-	return my_test_params
+	return all_params
 }
 func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
-
-	test_paramas := get_test_params()
-
 	fmt.Println("backteststart")
 
+	test_paramas := get_test_params(ti)
+
 	loc, _ := time.LoadLocation("Asia/Tokyo")
-	alna_minute_max := 70000
+	alna_minute_max := 1000
+
+	for test_i, test_v := range test_paramas {
+		fmt.Println(test_i, test_v)
+	}
 
 	for param_i, param_v := range test_paramas {
-		fmt.Println("test count", param_i, "/", len(test_paramas))
-		set_test_param("*trade_jadge_algo.Rci", ti, param_v.rci, param_v.rci_test_buy_rate)
-		fmt.Println("start rci = :", param_v.rci, "time=", time.Now())
+		if !is_my_test(param_i) {
+			continue
+		}
 
-		set_test_param("*trade_jadge_algo.Sma", ti, param_v.sma_long, param_v.sma_short, param_v.sma_up_rate)
+		fmt.Println("test count", param_i+1, "/", len(test_paramas))
+
+		for _, p_v := range param_v {
+			p_v.Ti.BacktestSetParam(p_v.Params)
+		}
+
 		model.ClearBacktestPosition()
 		var profit float64
 		var position_count int
@@ -120,9 +117,11 @@ func BacktestStart(ti []trade_jadge_algo.TradeInterface) {
 			}
 		}
 		profit, position_count = model.GetProfitBacktest()
-		fmt.Println("profit=", profit)
-
-		model.BacktestInsertTotalProfit(time.Now(), profit, param_v.sma_long, param_v.sma_short, float64(param_v.sma_up_rate)/1000, param_v.rci, position_count, param_v.rci_test_buy_rate)
+		fmt.Println("profit=", profit, "testcount", param_i)
+		position_count = 0
+		//コンパイルエラーなので殺してる
+		//		model.BacktestInsertTotalProfit(time.Now(), profit, param_v.sma_long, param_v.sma_short, float64(param_v.sma_up_rate)/1000, param_v.rci, position_count, param_v.rci_test_buy_rate)
+		model.BacktestInsertTotalProfit(time.Now(), profit, 0, 0, float64(0)/1000, 0, position_count, 0)
 	}
 }
 

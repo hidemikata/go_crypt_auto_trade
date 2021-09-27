@@ -213,11 +213,11 @@ func (sma_obj *Sma) IsTradeFix() bool {
 	return sma_obj.Short.sma_0 < sma_obj.Long.sma_0
 }
 
-func (sma_obj *Sma) SetParam(sma ...int) {
-	fmt.Println("sma set param ", sma)
-	sma_obj.num_of_long = sma[0]
-	sma_obj.num_of_short = sma[1]
-	sma_obj.min_max_rate = float64(sma[2]) / 1000
+func (sma_obj *Sma) BacktestSetParam(params []int) {
+	fmt.Println("sma set param ", params)
+	sma_obj.num_of_long = params[0]
+	sma_obj.num_of_short = params[1]
+	sma_obj.min_max_rate = float64(params[2]) / 1000
 }
 func (sma_obj *Sma) FixRealTick(t trade_def.Ticker) bool {
 	if sma_obj.Long.sma_0 > t.BestAsk {
@@ -225,4 +225,18 @@ func (sma_obj *Sma) FixRealTick(t trade_def.Ticker) bool {
 	}
 	//決済が早すぎるのでAskでみる。
 	return false
+}
+
+func (sma_obj *Sma) CreateBacktestParams() []BacktestParams {
+
+	p := make([]BacktestParams, 0)
+	for sma_long_i := 30; sma_long_i <= 30; sma_long_i++ {
+		for sma_short_i := 8; sma_short_i <= 8; sma_short_i++ {
+			for sma_up_rate := 10; sma_up_rate <= 10; sma_up_rate++ { //設定時に１０００で割る
+				p = append(p, BacktestParams{sma_obj, []int{sma_long_i, sma_short_i, sma_up_rate}})
+				fmt.Println(p)
+			}
+		}
+	}
+	return p
 }
