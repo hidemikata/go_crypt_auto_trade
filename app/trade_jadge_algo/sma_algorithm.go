@@ -202,7 +202,8 @@ func check_sma(sma_obj *Sma) bool {
 		sma_obj.Long.sma_2 < sma_obj.Long.sma_1 &&
 		sma_obj.Long.sma_1 < sma_obj.Long.sma_0 &&
 		sma_obj.LongLong.sma_2 < sma_obj.LongLong.sma_1 &&
-		sma_obj.LongLong.sma_1 < sma_obj.LongLong.sma_0 {
+		sma_obj.LongLong.sma_1 < sma_obj.LongLong.sma_0 &&
+		sma_obj.latest_candle.Low < sma_obj.LongLong.sma_0 {
 		return true
 	}
 	return false
