@@ -124,6 +124,8 @@ func get_min_max(records []trade_def.BtcJpy) (min float64, max float64) {
 
 func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
 	if len(records) < duration {
+		fmt.Println(len(records), duration)
+		fmt.Println(time.Now())
 		panic("")
 	}
 	total := 0.0
