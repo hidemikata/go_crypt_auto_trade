@@ -6,6 +6,7 @@ import (
 	"btcanallive_refact/app/controller/web_page"
 	"btcanallive_refact/app/trade_def"
 	"btcanallive_refact/app/trade_jadge_algo"
+	"btcanallive_refact/app/trade_jadge_algo/long_sma_algo"
 	"btcanallive_refact/config"
 	"fmt"
 	"sync"
@@ -25,6 +26,9 @@ func main() {
 
 	sma_algo := trade_jadge_algo.NewSmaAlgorithm()
 	ti = append(ti, sma_algo)
+
+	long_sma_algo := long_sma_algo.NewLongSmaAlgorithm()
+	ti = append(ti, long_sma_algo)
 
 	rci_algo := trade_jadge_algo.NewRciAlgorithm()
 	ti = append(ti, rci_algo)

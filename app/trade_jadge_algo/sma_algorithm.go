@@ -15,13 +15,6 @@ type LongSma struct {
 	sma_3 float64
 }
 
-type LongLongSma struct {
-	sma_0 float64 //latest
-	sma_1 float64
-	sma_2 float64
-	sma_3 float64
-}
-
 type ShortSma struct {
 	sma_0 float64 //latest
 	sma_1 float64
@@ -30,10 +23,8 @@ type ShortSma struct {
 
 type Sma struct {
 	num_of_long          int
-	num_of_long_long     int
 	num_of_short         int
 	Long                 LongSma
-	LongLong             LongLongSma
 	Short                ShortSma
 	latest_min           float64          //latest_min_max_num間での最小
 	latest_max           float64          //latest_min_max_num間での最大
@@ -64,7 +55,6 @@ func second_to_zero(t time.Time) string {
 func NewSmaAlgorithm() *Sma {
 	return &Sma{
 		num_of_long:          config.Config.SmaLong,
-		num_of_long_long:     config.Config.SmaLongLong,
 		num_of_short:         config.Config.SmaShort,
 		min_max_rate:         config.Config.SmaUpToRate,
 		min_max_rate_latest1: config.Config.SmaUpToRateLatest1,
@@ -73,7 +63,7 @@ func NewSmaAlgorithm() *Sma {
 func (sma_obj *Sma) Analisis(now time.Time) {
 	margine_duration := time.Duration(now_date_margine)
 	now_before_1min := now.Add(-(time.Minute * margine_duration))
-	long_sma_duration := time.Duration(sma_obj.num_of_long_long + sma_margine + now_date_margine)
+	long_sma_duration := time.Duration(sma_obj.num_of_long + sma_margine + now_date_margine)
 	now_before_long_sma := now.Add(-(time.Minute * long_sma_duration))
 	latest_str := second_to_zero(now_before_1min)
 	past_str := second_to_zero(now_before_long_sma)
@@ -87,19 +77,12 @@ func (sma_obj *Sma) Analisis(now time.Time) {
 		sma_3: calc_sma(records[:len(records)-3], sma_obj.num_of_long),
 	}
 
-	ll := LongLongSma{
-		sma_0: calc_sma(records[:], sma_obj.num_of_long_long),
-		sma_1: calc_sma(records[:len(records)-1], sma_obj.num_of_long_long),
-		sma_2: calc_sma(records[:len(records)-2], sma_obj.num_of_long_long),
-		sma_3: calc_sma(records[:len(records)-3], sma_obj.num_of_long_long),
-	}
 	s := ShortSma{
 		sma_0: calc_sma(records[:], sma_obj.num_of_short),
 		sma_1: calc_sma(records[:len(records)-1], sma_obj.num_of_short),
 		sma_2: calc_sma(records[:len(records)-2], sma_obj.num_of_short),
 	}
 	sma_obj.Long = l
-	sma_obj.LongLong = ll
 	sma_obj.Short = s
 
 	min, max := get_min_max(records[len(records)-latest_min_max_num : len(records)-1])
@@ -138,7 +121,7 @@ func calc_sma(records []trade_def.BtcJpy, duration int) float64 {
 }
 
 func (sma_obj *Sma) IsDbCollectedData(now time.Time) bool {
-	num_of_collect := sma_obj.num_of_long_long + sma_margine + now_date_margine
+	num_of_collect := sma_obj.num_of_long + sma_margine + now_date_margine
 	num_of_duration := time.Duration(num_of_collect)
 
 	if now.Second() > 50 {
@@ -200,10 +183,7 @@ func check_sma(sma_obj *Sma) bool {
 		sma_obj.Short.sma_1 < sma_obj.Short.sma_0 &&
 		sma_obj.Long.sma_3 < sma_obj.Long.sma_2 &&
 		sma_obj.Long.sma_2 < sma_obj.Long.sma_1 &&
-		sma_obj.Long.sma_1 < sma_obj.Long.sma_0 &&
-		sma_obj.LongLong.sma_2 < sma_obj.LongLong.sma_1 &&
-		sma_obj.LongLong.sma_1 < sma_obj.LongLong.sma_0 &&
-		sma_obj.latest_candle.Low < sma_obj.LongLong.sma_0 {
+		sma_obj.Long.sma_1 < sma_obj.Long.sma_0 {
 		return true
 	}
 	return false
