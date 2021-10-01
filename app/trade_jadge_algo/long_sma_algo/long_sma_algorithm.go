@@ -128,7 +128,7 @@ func check_in_range(sma_obj *LongSma) bool {
 func check_sma(sma_obj *LongSma) bool {
 	if sma_obj.LongLong.sma_2 < sma_obj.LongLong.sma_1 &&
 		sma_obj.LongLong.sma_1 < sma_obj.LongLong.sma_0 &&
-		sma_obj.latest_candle.Low < sma_obj.LongLong.sma_0 {
+		sma_obj.latest_candle.Low > sma_obj.LongLong.sma_0 {
 		return true
 	}
 	return false
