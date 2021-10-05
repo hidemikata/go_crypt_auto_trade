@@ -52,10 +52,10 @@ func StartAnalisis(marcket marcket_def.Marcket, real_time_ticker_ch chan trade_d
 			ti_v.Analisis(time.Now())
 			buy = buy && ti_v.IsTradeOrder()
 			fix = fix || ti_v.IsTradeFix()
-			fmt.Println("-", buy, fix)
+			fmt.Println(ti_v.Name(), " buf =", buy, " fix =", fix)
 		}
 
-		fmt.Println("1", buy, fix)
+		fmt.Println("buy =", buy, " fix =", fix)
 		latest_pos, fixed := model.GetLatestPosition(false)
 
 		if buy && (latest_pos.Date == "" || fixed) {

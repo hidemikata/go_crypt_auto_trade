@@ -18,4 +18,5 @@ type TradeInterface interface {
 	BacktestSetParam([]int)                 //パラメータを設定する。
 	FixRealTick(t trade_def.Ticker) bool    //tickレベルで決済
 	CreateBacktestParams() []BacktestParams //バックテストのパラメータ生成
+	Name() string
 }

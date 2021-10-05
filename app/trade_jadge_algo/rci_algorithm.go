@@ -150,3 +150,6 @@ func (obj *Rci) CreateBacktestParams() []BacktestParams {
 	return p
 
 }
+func (obj *Rci) Name() string {
+	return "Rci"
+}

@@ -221,3 +221,7 @@ func (sma_obj *Sma) CreateBacktestParams() []BacktestParams {
 	}
 	return p
 }
+
+func (sma_obj *Sma) Name() string {
+	return "sma cross"
+}
