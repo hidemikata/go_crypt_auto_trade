@@ -87,6 +87,24 @@ innodb_buffer_pool_size=1024M
 sort_buffer_size=2048M  
 read_buffer_size=2048M  
 innodb_thread_concurrency=128  
+
+
+# cron
+crontab -e
+PYTHONIOENCODING = 'utf-8'  
+LANG=ja_JP.UTF-8  
+#$HOME/Desktop/log.txt 2>&1  
+#running root cron too(shutdown -r now).  
+  
+  
+##prod  
+0 7 * * * bash -l -c 'echo start >> /home/ubuntu/log.txt 2>&1 && date >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./start.bash >> /home/ubuntu/log.txt 2>&1 && echo end >> /home/ubuntu/log.txt 2>&1'  
+  
+* 8-23 * * * bash -l -c 'echo is_running >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./is_running.bash >> /home/ubuntu/log.txt 2>&1 && ./start.bash >> /home/ubuntu/log.txt 2>&1 && echo is_running end >> /home/ubuntu/log.txt 2>&1'  
+* 0-3 * * * bash -l -c 'echo is_running >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./is_running.bash >> /home/ubuntu/log.txt 2>&1 && ./start.bash >> /home/ubuntu/log.txt 2>&1 && echo is_running end >> /home/ubuntu/log.txt 2>&1'  
+  
+0 4 * * * bash -l -c 'echo  stop >> /home/ubuntu/log.txt 2>&1 && date >> /home/ubuntu/log.txt 2>&1 && cd /home/ubuntu/btcanallive_refact && ./stop.bash >> /home/ubuntu/log.txt 2>&1 && echo end >> /home/ubuntu/log.txt 2>&1'  
+
   
 # run
 go run main.go  
